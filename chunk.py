@@ -432,12 +432,8 @@ def chunk_document(
     """
     Chunk a legal document into semantically coherent pieces.
 
-    Strategy:
-    1. Parse into Articles → Sections → Subsections
-    2. Definitions get individual chunks per term
-    3. Subsections ((a), (b), etc.) stay with their parent if under max_tokens
-    4. Long sections are split at sentence boundaries with overlap
-    5. Every chunk gets a section-path header for context
+    Always uses semantic chunking (embedding similarity between consecutive
+    sentences) for consistent results on both structured and messy text.
 
     Args:
         text: full document text
@@ -448,132 +444,7 @@ def chunk_document(
     Returns:
         list of Chunk objects
     """
-    text = clean_text(text)
-
-    # Auto-detect: use structural chunking if markers present, else semantic
-    if not has_structural_markers(text):
-        print("  [auto] No structural markers found, using semantic chunking")
-        return semantic_chunk(text, max_tokens=max_tokens)
-
-    print("  [auto] Structural markers detected, using hierarchical chunking")
-    chunks = []
-
-    # Separate TOC/preamble from body
-    preamble, body = strip_toc(text)
-    if preamble:
-        chunks.append(Chunk(
-            text=preamble[:2000],  # Cap preamble size
-            section_path=["PREAMBLE"],
-            chunk_type="preamble",
-            page=1,
-        ))
-
-    articles = split_into_articles(body)
-
-    for article_header, article_body, article_offset in articles:
-        # Skip TOC
-        if is_toc_section(article_body):
-            continue
-
-        sections = split_into_sections(article_body)
-
-        for section_header, section_body, section_offset in sections:
-            section_body_clean = clean_text(section_body)
-            if not section_body_clean or is_toc_section(section_body_clean):
-                continue
-
-            # Build section path
-            path = []
-            if article_header:
-                path.append(article_header)
-            if section_header:
-                path.append(section_header)
-
-            # Determine page
-            abs_offset = article_offset + section_offset
-            page = get_page_for_offset(abs_offset, offset_to_page) if offset_to_page else None
-
-            # --- Definitions section: chunk per term ---
-            if detect_definitions_section(section_body_clean):
-                defs = split_definitions(section_body_clean)
-                # Group small definitions together up to max_tokens
-                group_text = ""
-                group_terms = []
-                for term, def_text in defs:
-                    if estimate_tokens(group_text + "\n" + def_text) > max_tokens and group_text:
-                        chunks.append(Chunk(
-                            text=group_text.strip(),
-                            section_path=path + ([f"Definitions: {', '.join(group_terms)}"] if group_terms else []),
-                            chunk_type="definition",
-                            page=page,
-                        ))
-                        group_text = ""
-                        group_terms = []
-                    group_text += "\n" + def_text
-                    if term:
-                        group_terms.append(term)
-                if group_text.strip():
-                    chunks.append(Chunk(
-                        text=group_text.strip(),
-                        section_path=path + ([f"Definitions: {', '.join(group_terms)}"] if group_terms else []),
-                        chunk_type="definition",
-                        page=page,
-                    ))
-                continue
-
-            # --- Regular section ---
-            # Try keeping whole section as one chunk
-            if estimate_tokens(section_body_clean) <= max_tokens:
-                chunks.append(Chunk(
-                    text=section_body_clean,
-                    section_path=path,
-                    chunk_type="clause",
-                    page=page,
-                ))
-                continue
-
-            # Try subsection-level grouping
-            subsections = split_subsections(section_body_clean)
-            if len(subsections) > 1:
-                # Try grouping: parent intro + subsections that fit together
-                intro = subsections[0] if not RE_SUBSECTION.match(subsections[0]) else ""
-                items = subsections[1:] if intro else subsections
-
-                group_text = intro
-                for item in items:
-                    combined = (group_text + "\n" + item).strip() if group_text else item
-                    if estimate_tokens(combined) > max_tokens and group_text:
-                        # Flush current group
-                        chunks.append(Chunk(
-                            text=group_text.strip(),
-                            section_path=path,
-                            chunk_type="clause",
-                            page=page,
-                        ))
-                        # Start new group with intro context for continuity
-                        group_text = f"{intro}\n{item}".strip() if intro else item
-                    else:
-                        group_text = combined
-
-                if group_text.strip():
-                    chunks.append(Chunk(
-                        text=group_text.strip(),
-                        section_path=path,
-                        chunk_type="clause",
-                        page=page,
-                    ))
-            else:
-                # No subsections — split at sentence boundaries
-                parts = split_at_sentences(section_body_clean, max_tokens, overlap_sentences)
-                for part in parts:
-                    chunks.append(Chunk(
-                        text=part.strip(),
-                        section_path=path,
-                        chunk_type="clause",
-                        page=page,
-                    ))
-
-    return chunks
+    return semantic_chunk(clean_text(text), max_tokens=max_tokens)
 
 
 def chunk_pdf(pdf_path: str, max_tokens: int = 384) -> list[Chunk]:
