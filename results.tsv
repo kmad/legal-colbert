@@ -1,0 +1,9 @@
+timestamp	commit	ndcg@10	map	recall@1	recall@10	train_time_s	status	description
+2026-03-22T02:30:56	baseline	0.7625	0.7115	0.3556	0.8556	266	kept	baseline: 3ep, lr3e-6, temp0.02
+2026-03-22T02:48:26	exp1	0.7723	0.7194	0.3556	0.8778	422	kept	5 epochs
+2026-03-22T03:04:14	exp2	0.68	0.6277	0.3111	0.7889	419	discarded	temp 0.01
+2026-03-22T03:12:57	exp3	0.7731	0.7194	0.3556	0.8778	416	kept	temp 0.05, 5ep
+2026-03-22T03:32:38	exp4	0.7462	0.6794	0.3444	0.8778	408	discarded	lr 1e-5
+2026-03-22T04:13:10	exp5	0.7932	0.7443	0.3889	0.8778	0	kept	10 epochs, temp 0.05
+2026-03-22T04:32:29	exp6	0.7746	0.7193	0.3667	0.8778	0	discarded	ACORD relevance>=2, 10ep, temp0.05
+2026-03-22T04:57:24	exp7	0.7482	0.6936	0.3444	0.8556	0	discarded	15 epochs, warmup 0.1, temp 0.05
