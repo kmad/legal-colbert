@@ -151,8 +151,8 @@ def scrape_category(category_slug: str, category_name: str, api_key: str) -> lis
     all_clauses = extract_clauses_from_collection(html, category_name)
     print(f"  Index page: {len(all_clauses)} clauses")
 
-    # Fetch top collections (limit to avoid rate limiting)
-    for url, count in collections[:5]:
+    # Fetch ALL collections
+    for url, count in collections:
         time.sleep(1)  # Rate limit
         print(f"  Fetching collection ({count} clauses): {url}")
         try:
@@ -174,6 +174,67 @@ def scrape_category(category_slug: str, category_name: str, api_key: str) -> lis
 
     print(f"Total unique clauses for {category_name}: {len(unique)}")
     return unique
+
+
+def extract_contract_text(html: str) -> str:
+    """Extract the full contract text from a Justia contract page."""
+    # Contract filing text is the bulk of the page between nav and footer
+    # Find content starting from EX- filing marker
+    match = re.search(r"(EX-\d+.*?)(?:<footer|class=\"footer\"|© \d{4})", html, re.DOTALL)
+    if not match:
+        # Try from the first SEC exhibit marker
+        match = re.search(r"(Exhibit \d+.*?)(?:<footer|class=\"footer\"|© \d{4})", html, re.DOTALL)
+    if not match:
+        return ""
+
+    text = match.group(1)
+    # Clean HTML
+    text = re.sub(r"<style[^>]*>.*?</style>", "", text, flags=re.DOTALL)
+    text = re.sub(r"<script[^>]*>.*?</script>", "", text, flags=re.DOTALL)
+    text = re.sub(r"<[^>]+>", "\n", text)
+    text = re.sub(r"&nbsp;", " ", text)
+    text = re.sub(r"&amp;", "&", text)
+    text = re.sub(r"&lt;", "<", text)
+    text = re.sub(r"&gt;", ">", text)
+    text = re.sub(r"&#\d+;", "", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    text = re.sub(r"[ \t]+", " ", text)
+    return text.strip()
+
+
+def fetch_contracts(clauses: list[dict], api_key: str, max_contracts: int = 50) -> dict[str, str]:
+    """Fetch full contract texts for unique contracts referenced in clauses.
+
+    Returns dict mapping contract URL (without fragment) to contract text.
+    """
+    # Deduplicate contract URLs (strip #clause-id fragment)
+    unique_urls = {}
+    for c in clauses:
+        url = c.get("contract_url", "")
+        if not url:
+            continue
+        base_url = url.split("#")[0]
+        if base_url not in unique_urls:
+            unique_urls[base_url] = c["contract"]
+
+    print(f"\nFetching {min(len(unique_urls), max_contracts)} contracts (of {len(unique_urls)} unique)...")
+    contracts = {}
+    for i, (url, name) in enumerate(list(unique_urls.items())[:max_contracts]):
+        time.sleep(1)
+        print(f"  [{i+1}] {name}: {url}")
+        try:
+            html = fetch_page(url, api_key)
+            text = extract_contract_text(html)
+            if len(text) > 500:
+                contracts[url] = text
+                print(f"    {len(text)} chars")
+            else:
+                print(f"    Too short ({len(text)} chars), skipping")
+        except Exception as e:
+            print(f"    Error: {e}")
+
+    print(f"Fetched {len(contracts)} contracts")
+    return contracts
 
 
 def scrape_all(categories: dict[str, str] | None = None) -> list[dict]:
@@ -198,8 +259,16 @@ def scrape_all(categories: dict[str, str] | None = None) -> list[dict]:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        slug = sys.argv[1]
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Scrape Justia contract clauses")
+    parser.add_argument("category", nargs="?", help="Single category slug to scrape")
+    parser.add_argument("--fetch-contracts", action="store_true", help="Also fetch full contract texts")
+    parser.add_argument("--max-contracts", type=int, default=50, help="Max contracts to fetch")
+    args = parser.parse_args()
+
+    if args.category:
+        slug = args.category
         name = CATEGORIES.get(slug, slug.replace("-", " ").title())
         categories = {slug: name}
     else:
@@ -210,7 +279,15 @@ if __name__ == "__main__":
     output_path = "justia_dataset.json"
     with open(output_path, "w") as f:
         json.dump(clauses, f, indent=2)
-    print(f"\nSaved to {output_path}")
+    print(f"\nSaved {len(clauses)} clauses to {output_path}")
+
+    if args.fetch_contracts:
+        api_key = get_api_key()
+        contracts = fetch_contracts(clauses, api_key, max_contracts=args.max_contracts)
+        contracts_path = "justia_contracts.json"
+        with open(contracts_path, "w") as f:
+            json.dump(contracts, f, indent=2)
+        print(f"Saved {len(contracts)} contracts to {contracts_path}")
 
     # Summary by type
     from collections import Counter
