@@ -146,6 +146,32 @@ def load_acord_pairs() -> tuple[list[str], list[str], list[str]]:
     return queries, positives, corpus
 
 
+def load_synthetic_pairs(dataset_path: str = "synthetic_queries.json") -> tuple[list[str], list[str], list[str]]:
+    """Load LLM-generated synthetic query-clause pairs.
+
+    These have three query styles per clause (natural question, keyword, semantic)
+    matching real production usage patterns.
+
+    Returns:
+        queries, positives, corpus
+    """
+    import json
+
+    if not Path(dataset_path).exists():
+        print(f"  Synthetic queries not found at {dataset_path}, skipping")
+        return [], [], []
+
+    print(f"Loading synthetic queries from {dataset_path}...")
+    with open(dataset_path) as f:
+        pairs = json.load(f)
+
+    queries = [p["query"] for p in pairs]
+    positives = [p["positive"] for p in pairs]
+    corpus = list({p["positive"] for p in pairs})
+    print(f"  Synthetic: {len(queries)} pairs, {len(corpus)} unique clauses")
+    return queries, positives, corpus
+
+
 def load_justia_pairs(dataset_path: str = "justia_dataset.json") -> tuple[list[str], list[str], list[str]]:
     """Load Justia clause pairs: category description as query, clause text as positive.
 
@@ -285,7 +311,7 @@ def prepare_training_data(output_dir: str = "data") -> DatasetDict:
     # Load all datasets
     cuad_queries, cuad_positives, cuad_corpus = load_cuad_pairs()
     acord_queries, acord_positives, acord_corpus = load_acord_pairs()
-    justia_queries, justia_positives, justia_corpus = load_justia_pairs()
+    synth_queries, synth_positives, synth_corpus = load_synthetic_pairs()
 
     # Mine hard negatives separately (each dataset has its own corpus)
     print("\nMining BM25 hard negatives for CUAD...")
@@ -296,15 +322,15 @@ def prepare_training_data(output_dir: str = "data") -> DatasetDict:
         print("\nMining BM25 hard negatives for ACORD...")
         acord_negatives = mine_hard_negatives_bm25(acord_queries, acord_positives, acord_corpus)
 
-    justia_negatives = []
-    if justia_queries:
-        print("\nMining BM25 hard negatives for Justia...")
-        justia_negatives = mine_hard_negatives_bm25(justia_queries, justia_positives, justia_corpus)
+    synth_negatives = []
+    if synth_queries:
+        print("\nMining BM25 hard negatives for synthetic queries...")
+        synth_negatives = mine_hard_negatives_bm25(synth_queries, synth_positives, synth_corpus)
 
     # Combine
-    all_queries = cuad_queries + acord_queries + justia_queries
-    all_positives = cuad_positives + acord_positives + justia_positives
-    all_negatives = cuad_negatives + acord_negatives + justia_negatives
+    all_queries = cuad_queries + acord_queries + synth_queries
+    all_positives = cuad_positives + acord_positives + synth_positives
+    all_negatives = cuad_negatives + acord_negatives + synth_negatives
 
     dataset = Dataset.from_dict({
         "query": all_queries,
