@@ -6,3 +6,11 @@ wandb/
 .env
 *.pt
 pylate-index/
+legal-index/
+model/
+data/
+mleb/
+*.pdf
+*.md.bak
+justia_*.md
+pactiv_contract.txt
