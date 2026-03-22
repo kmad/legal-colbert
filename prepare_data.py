@@ -236,17 +236,57 @@ def load_justia_pairs(dataset_path: str = "justia_dataset.json") -> tuple[list[s
     return queries, positives, corpus
 
 
+def _query_keywords(query: str) -> set[str]:
+    """Extract meaningful keywords from a query, stripping stopwords and CUAD boilerplate."""
+    stopwords = {
+        # English stopwords
+        'the', 'a', 'an', 'of', 'in', 'to', 'for', 'and', 'or', 'is', 'are',
+        'that', 'this', 'by', 'be', 'as', 'if', 'any', 'such', 'its', 'it',
+        'should', 'have', 'has', 'been', 'not', 'all', 'with', 'from', 'on',
+        'at', 'which', 'does', 'do', 'can', 'may', 'will', 'would', 'could',
+        'there', 'what', 'how', 'when', 'where', 'who', 'why', 'other', 'each',
+        'both', 'than', 'no', 'nor', 'so', 'too', 'very', 'just', 'about',
+        'between', 'into', 'through', 'during', 'before', 'after', 'above',
+        'below', 'up', 'down', 'out', 'off', 'over', 'then', 'once', 'here',
+        'only', 'own', 'same', 'but', 'because', 'until', 'while',
+        # CUAD query boilerplate
+        'highlight', 'parts', 'contract', 'related', 'reviewed', 'lawyer',
+        'details', 'one', 'right',
+        # Generic legal terms (appear everywhere in contracts)
+        'clause', 'agreement', 'party', 'parties', 'upon', 'under',
+        'section', 'shall', 'herein', 'hereof', 'thereof', 'pursuant',
+        'provided', 'respect', 'written', 'notice', 'provide', 'whether',
+        'including', 'without', 'limitation', 'connection', 'accordance',
+        'event', 'otherwise', 'provisions', 'provision', 'terms', 'term',
+        'set', 'forth', 'made', 'date', 'prior', 'following', 'subject',
+    }
+    words = set(re.findall(r'\b\w+\b', query.lower()))
+    return words - stopwords
+
+
+def _keyword_overlap(query_kw: set[str], text: str) -> float:
+    """Fraction of query keywords found in text."""
+    if not query_kw:
+        return 0.0
+    text_words = set(re.findall(r'\b\w+\b', text.lower()))
+    return len(query_kw & text_words) / len(query_kw)
+
+
 def mine_hard_negatives_bm25(
     queries: list[str],
     positives: list[str],
     corpus: list[str],
     n_negatives: int = 1,
-    top_k: int = 20,
+    top_k: int = 100,
+    max_keyword_overlap: float = 0.6,
 ) -> list[str]:
-    """Mine hard negatives using BM25.
+    """Mine hard negatives using BM25, filtering out false negatives.
 
     For each query, retrieves top-k BM25 results and picks the highest-ranked
-    document that is NOT the positive as the hard negative.
+    document that:
+    1. Is not a known positive for that query (across all contracts)
+    2. Has keyword overlap with the query below max_keyword_overlap, to avoid
+       selecting passages that are clearly about the same topic
 
     Args:
         queries: list of query strings
@@ -254,6 +294,7 @@ def mine_hard_negatives_bm25(
         corpus: full corpus to mine negatives from
         n_negatives: number of hard negatives per query
         top_k: number of BM25 candidates to consider
+        max_keyword_overlap: reject candidates with query keyword overlap above this
 
     Returns:
         negatives: list of hard negative documents (aligned with queries)
@@ -263,14 +304,27 @@ def mine_hard_negatives_bm25(
     if len(corpus) < 2:
         raise ValueError("Need at least 2 documents in corpus to mine negatives.")
 
+    from collections import defaultdict
+
+    # Build a set of ALL positives for each unique query, so we exclude
+    # documents that are valid answers from other contracts
+    query_to_positives = defaultdict(set)
+    for q, p in zip(queries, positives):
+        query_to_positives[q].add(p)
+
     print(f"Building BM25 index over {len(corpus)} documents...")
     tokenized_corpus = [tokenize(doc) for doc in corpus]
     bm25 = BM25Okapi(tokenized_corpus)
 
     negatives = []
+    overlap_filtered = 0
+    fallback_count = 0
     for i, (query, positive) in enumerate(zip(queries, positives)):
         if i % 500 == 0:
             print(f"  Mining negatives: {i}/{len(queries)}")
+
+        all_positives_for_query = query_to_positives[query]
+        query_kw = _query_keywords(query)
 
         tokenized_query = tokenize(query)
         scores = bm25.get_scores(tokenized_query)
@@ -282,21 +336,53 @@ def mine_hard_negatives_bm25(
             reverse=True,
         )[: min(top_k, len(scores))]
 
-        # Pick the highest-scoring document that isn't the positive
+        # Extract quoted clause type from CUAD-style queries for exact-match filtering
+        ct_match = re.search(r'"([^"]+)"', query)
+        clause_type_pattern = (
+            re.compile(re.escape(ct_match.group(1)), re.I) if ct_match else None
+        )
+
+        # Pick the highest-scoring document that isn't a positive and doesn't
+        # have excessive keyword overlap (which signals it's about the same topic)
         hard_neg = None
         for idx in top_indices:
             candidate = corpus[idx]
-            if candidate != positive:
-                hard_neg = candidate
-                break
+            if candidate in all_positives_for_query:
+                continue
+            # Reject if candidate contains the exact clause type phrase
+            if clause_type_pattern and clause_type_pattern.search(candidate):
+                overlap_filtered += 1
+                continue
+            if _keyword_overlap(query_kw, candidate) > max_keyword_overlap:
+                overlap_filtered += 1
+                continue
+            hard_neg = candidate
+            break
 
-        # Fallback: random negative
+        # Fallback: random negative from corpus, preferring ones that don't
+        # match the clause type or have low keyword overlap
         if hard_neg is None:
-            hard_neg = random.choice([c for c in corpus if c != positive])
+            fallback_count += 1
+            non_positives = [c for c in corpus if c not in all_positives_for_query]
+            if non_positives:
+                # Filter out candidates containing the exact clause type
+                filtered = non_positives
+                if clause_type_pattern:
+                    filtered = [c for c in filtered if not clause_type_pattern.search(c)]
+                # Further prefer low keyword overlap
+                low_overlap = [c for c in filtered
+                               if _keyword_overlap(query_kw, c) <= max_keyword_overlap]
+                pool = low_overlap or filtered or non_positives
+                hard_neg = random.choice(pool)
+            else:
+                hard_neg = random.choice([c for c in corpus if c != positive])
 
         negatives.append(hard_neg)
 
     print(f"  Mined {len(negatives)} hard negatives")
+    print(f"  Filtered {overlap_filtered} candidates for keyword overlap > {max_keyword_overlap}")
+    if fallback_count:
+        print(f"  {fallback_count} queries fell back to random negatives")
     return negatives
 
 
