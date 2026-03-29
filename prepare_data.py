@@ -146,17 +146,147 @@ def load_acord_pairs() -> tuple[list[str], list[str], list[str]]:
     return queries, positives, corpus
 
 
+def load_synthetic_pairs(dataset_path: str = "synthetic_queries.json") -> tuple[list[str], list[str], list[str]]:
+    """Load LLM-generated synthetic query-clause pairs.
+
+    These have three query styles per clause (natural question, keyword, semantic)
+    matching real production usage patterns.
+
+    Returns:
+        queries, positives, corpus
+    """
+    import json
+
+    if not Path(dataset_path).exists():
+        print(f"  Synthetic queries not found at {dataset_path}, skipping")
+        return [], [], []
+
+    print(f"Loading synthetic queries from {dataset_path}...")
+    with open(dataset_path) as f:
+        pairs = json.load(f)
+
+    queries = [p["query"] for p in pairs]
+    positives = [p["positive"] for p in pairs]
+    corpus = list({p["positive"] for p in pairs})
+    print(f"  Synthetic: {len(queries)} pairs, {len(corpus)} unique clauses")
+    return queries, positives, corpus
+
+
+def load_justia_pairs(dataset_path: str = "justia_dataset.json") -> tuple[list[str], list[str], list[str]]:
+    """Load Justia clause pairs: category description as query, clause text as positive.
+
+    Uses the clause category name as a natural language query (e.g., "Termination",
+    "Limitation of Liability"). Hard negatives are clauses from DIFFERENT categories
+    that BM25 thinks are similar — these are especially valuable because they teach
+    the model to distinguish between clause types.
+
+    Returns:
+        queries: list of category-based queries
+        positives: list of clause texts
+        corpus: deduplicated list of all clauses for negative mining
+    """
+    import json
+
+    if not Path(dataset_path).exists():
+        print(f"  Justia dataset not found at {dataset_path}, skipping")
+        return [], [], []
+
+    print(f"Loading Justia clauses from {dataset_path}...")
+    with open(dataset_path) as f:
+        clauses = json.load(f)
+
+    # Category descriptions for richer queries
+    CATEGORY_QUERIES = {
+        "Termination": "This clause describes when and how the agreement can be terminated by either party.",
+        "Indemnification": "This clause requires one party to compensate the other for losses, damages, or liabilities.",
+        "Governing Law": "This clause specifies which jurisdiction's laws govern the interpretation of the agreement.",
+        "Limitation of Liability": "This clause limits the maximum amount of damages one party can recover from the other.",
+        "Confidentiality": "This clause restricts the disclosure of confidential or proprietary information.",
+        "Force Majeure": "This clause excuses performance when extraordinary events beyond the parties' control occur.",
+        "Assignment": "This clause restricts or permits the transfer of rights or obligations under the agreement.",
+        "Waiver of Jury Trial": "This clause requires both parties to waive their right to a jury trial in any dispute.",
+        "Change of Control": "This clause addresses what happens when ownership or control of a party changes.",
+        "Non-Competition": "This clause restricts a party from competing with the other party during or after the agreement.",
+        "Severability": "This clause ensures that if one provision is found unenforceable, the rest of the agreement remains valid.",
+        "Entire Agreement": "This clause states that the written agreement is the complete understanding between the parties.",
+        "Dispute Resolution": "This clause specifies how disputes between the parties will be resolved, such as through arbitration or mediation.",
+        "Representations and Warranties": "This clause contains statements of fact and promises about the condition of the parties and the subject matter.",
+        "Events of Default": "This clause defines specific events that constitute a breach or default under the agreement.",
+    }
+
+    queries = []
+    positives = []
+    all_clauses = set()
+
+    for clause in clauses:
+        text = clause.get("clause_text", "")
+        clause_type = clause.get("clause_type", "")
+        if not text or len(text) < 50:
+            continue
+
+        all_clauses.add(text)
+
+        # Use rich category description as query, falling back to category name
+        query = CATEGORY_QUERIES.get(clause_type, clause_type)
+        queries.append(query)
+        positives.append(text)
+
+    corpus = list(all_clauses)
+    print(f"  Justia: {len(queries)} clause pairs, {len(corpus)} unique clauses across {len(set(c.get('clause_type') for c in clauses))} categories")
+    return queries, positives, corpus
+
+
+def _query_keywords(query: str) -> set[str]:
+    """Extract meaningful keywords from a query, stripping stopwords and CUAD boilerplate."""
+    stopwords = {
+        # English stopwords
+        'the', 'a', 'an', 'of', 'in', 'to', 'for', 'and', 'or', 'is', 'are',
+        'that', 'this', 'by', 'be', 'as', 'if', 'any', 'such', 'its', 'it',
+        'should', 'have', 'has', 'been', 'not', 'all', 'with', 'from', 'on',
+        'at', 'which', 'does', 'do', 'can', 'may', 'will', 'would', 'could',
+        'there', 'what', 'how', 'when', 'where', 'who', 'why', 'other', 'each',
+        'both', 'than', 'no', 'nor', 'so', 'too', 'very', 'just', 'about',
+        'between', 'into', 'through', 'during', 'before', 'after', 'above',
+        'below', 'up', 'down', 'out', 'off', 'over', 'then', 'once', 'here',
+        'only', 'own', 'same', 'but', 'because', 'until', 'while',
+        # CUAD query boilerplate
+        'highlight', 'parts', 'contract', 'related', 'reviewed', 'lawyer',
+        'details', 'one', 'right',
+        # Generic legal terms (appear everywhere in contracts)
+        'clause', 'agreement', 'party', 'parties', 'upon', 'under',
+        'section', 'shall', 'herein', 'hereof', 'thereof', 'pursuant',
+        'provided', 'respect', 'written', 'notice', 'provide', 'whether',
+        'including', 'without', 'limitation', 'connection', 'accordance',
+        'event', 'otherwise', 'provisions', 'provision', 'terms', 'term',
+        'set', 'forth', 'made', 'date', 'prior', 'following', 'subject',
+    }
+    words = set(re.findall(r'\b\w+\b', query.lower()))
+    return words - stopwords
+
+
+def _keyword_overlap(query_kw: set[str], text: str) -> float:
+    """Fraction of query keywords found in text."""
+    if not query_kw:
+        return 0.0
+    text_words = set(re.findall(r'\b\w+\b', text.lower()))
+    return len(query_kw & text_words) / len(query_kw)
+
+
 def mine_hard_negatives_bm25(
     queries: list[str],
     positives: list[str],
     corpus: list[str],
     n_negatives: int = 1,
-    top_k: int = 20,
+    top_k: int = 100,
+    max_keyword_overlap: float = 0.6,
 ) -> list[str]:
-    """Mine hard negatives using BM25.
+    """Mine hard negatives using BM25, filtering out false negatives.
 
     For each query, retrieves top-k BM25 results and picks the highest-ranked
-    document that is NOT the positive as the hard negative.
+    document that:
+    1. Is not a known positive for that query (across all contracts)
+    2. Has keyword overlap with the query below max_keyword_overlap, to avoid
+       selecting passages that are clearly about the same topic
 
     Args:
         queries: list of query strings
@@ -164,6 +294,7 @@ def mine_hard_negatives_bm25(
         corpus: full corpus to mine negatives from
         n_negatives: number of hard negatives per query
         top_k: number of BM25 candidates to consider
+        max_keyword_overlap: reject candidates with query keyword overlap above this
 
     Returns:
         negatives: list of hard negative documents (aligned with queries)
@@ -173,14 +304,27 @@ def mine_hard_negatives_bm25(
     if len(corpus) < 2:
         raise ValueError("Need at least 2 documents in corpus to mine negatives.")
 
+    from collections import defaultdict
+
+    # Build a set of ALL positives for each unique query, so we exclude
+    # documents that are valid answers from other contracts
+    query_to_positives = defaultdict(set)
+    for q, p in zip(queries, positives):
+        query_to_positives[q].add(p)
+
     print(f"Building BM25 index over {len(corpus)} documents...")
     tokenized_corpus = [tokenize(doc) for doc in corpus]
     bm25 = BM25Okapi(tokenized_corpus)
 
     negatives = []
+    overlap_filtered = 0
+    fallback_count = 0
     for i, (query, positive) in enumerate(zip(queries, positives)):
         if i % 500 == 0:
             print(f"  Mining negatives: {i}/{len(queries)}")
+
+        all_positives_for_query = query_to_positives[query]
+        query_kw = _query_keywords(query)
 
         tokenized_query = tokenize(query)
         scores = bm25.get_scores(tokenized_query)
@@ -192,21 +336,53 @@ def mine_hard_negatives_bm25(
             reverse=True,
         )[: min(top_k, len(scores))]
 
-        # Pick the highest-scoring document that isn't the positive
+        # Extract quoted clause type from CUAD-style queries for exact-match filtering
+        ct_match = re.search(r'"([^"]+)"', query)
+        clause_type_pattern = (
+            re.compile(re.escape(ct_match.group(1)), re.I) if ct_match else None
+        )
+
+        # Pick the highest-scoring document that isn't a positive and doesn't
+        # have excessive keyword overlap (which signals it's about the same topic)
         hard_neg = None
         for idx in top_indices:
             candidate = corpus[idx]
-            if candidate != positive:
-                hard_neg = candidate
-                break
+            if candidate in all_positives_for_query:
+                continue
+            # Reject if candidate contains the exact clause type phrase
+            if clause_type_pattern and clause_type_pattern.search(candidate):
+                overlap_filtered += 1
+                continue
+            if _keyword_overlap(query_kw, candidate) > max_keyword_overlap:
+                overlap_filtered += 1
+                continue
+            hard_neg = candidate
+            break
 
-        # Fallback: random negative
+        # Fallback: random negative from corpus, preferring ones that don't
+        # match the clause type or have low keyword overlap
         if hard_neg is None:
-            hard_neg = random.choice([c for c in corpus if c != positive])
+            fallback_count += 1
+            non_positives = [c for c in corpus if c not in all_positives_for_query]
+            if non_positives:
+                # Filter out candidates containing the exact clause type
+                filtered = non_positives
+                if clause_type_pattern:
+                    filtered = [c for c in filtered if not clause_type_pattern.search(c)]
+                # Further prefer low keyword overlap
+                low_overlap = [c for c in filtered
+                               if _keyword_overlap(query_kw, c) <= max_keyword_overlap]
+                pool = low_overlap or filtered or non_positives
+                hard_neg = random.choice(pool)
+            else:
+                hard_neg = random.choice([c for c in corpus if c != positive])
 
         negatives.append(hard_neg)
 
     print(f"  Mined {len(negatives)} hard negatives")
+    print(f"  Filtered {overlap_filtered} candidates for keyword overlap > {max_keyword_overlap}")
+    if fallback_count:
+        print(f"  {fallback_count} queries fell back to random negatives")
     return negatives
 
 
@@ -218,9 +394,10 @@ def prepare_training_data(output_dir: str = "data") -> DatasetDict:
     """
     Path(output_dir).mkdir(exist_ok=True)
 
-    # Load both datasets
+    # Load all datasets
     cuad_queries, cuad_positives, cuad_corpus = load_cuad_pairs()
     acord_queries, acord_positives, acord_corpus = load_acord_pairs()
+    synth_queries, synth_positives, synth_corpus = load_synthetic_pairs()
 
     # Mine hard negatives separately (each dataset has its own corpus)
     print("\nMining BM25 hard negatives for CUAD...")
@@ -231,10 +408,15 @@ def prepare_training_data(output_dir: str = "data") -> DatasetDict:
         print("\nMining BM25 hard negatives for ACORD...")
         acord_negatives = mine_hard_negatives_bm25(acord_queries, acord_positives, acord_corpus)
 
+    synth_negatives = []
+    if synth_queries:
+        print("\nMining BM25 hard negatives for synthetic queries...")
+        synth_negatives = mine_hard_negatives_bm25(synth_queries, synth_positives, synth_corpus)
+
     # Combine
-    all_queries = cuad_queries + acord_queries
-    all_positives = cuad_positives + acord_positives
-    all_negatives = cuad_negatives + acord_negatives
+    all_queries = cuad_queries + acord_queries + synth_queries
+    all_positives = cuad_positives + acord_positives + synth_positives
+    all_negatives = cuad_negatives + acord_negatives + synth_negatives
 
     dataset = Dataset.from_dict({
         "query": all_queries,

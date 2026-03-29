@@ -14,3 +14,7 @@ mleb/
 *.md.bak
 justia_*.md
 pactiv_contract.txt
+justia_dataset.json
+justia_contracts.json
+synthetic_queries.json
+justia_clauses.json
