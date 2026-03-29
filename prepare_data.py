@@ -146,6 +146,29 @@ def load_acord_pairs() -> tuple[list[str], list[str], list[str]]:
     return queries, positives, corpus
 
 
+def load_generated_qa(dataset_path: str = "generated_qa.json") -> tuple[list[str], list[str], list[str]]:
+    """Load LLM-generated QA pairs from full contracts.
+
+    Returns:
+        queries, positives, corpus
+    """
+    import json
+
+    if not Path(dataset_path).exists():
+        print(f"  Generated QA not found at {dataset_path}, skipping")
+        return [], [], []
+
+    print(f"Loading generated QA from {dataset_path}...")
+    with open(dataset_path) as f:
+        pairs = json.load(f)
+
+    queries = [p["query"] for p in pairs if p.get("query")]
+    positives = [p["positive"] for p in pairs if p.get("positive")]
+    corpus = list({p["positive"] for p in pairs if p.get("positive")})
+    print(f"  Generated QA: {len(queries)} pairs, {len(corpus)} unique passages")
+    return queries, positives, corpus
+
+
 def load_synthetic_pairs(dataset_path: str = "synthetic_queries.json") -> tuple[list[str], list[str], list[str]]:
     """Load LLM-generated synthetic query-clause pairs.
 
@@ -386,8 +409,95 @@ def mine_hard_negatives_bm25(
     return negatives
 
 
-def prepare_training_data(output_dir: str = "data") -> DatasetDict:
-    """Prepare combined training dataset from CUAD and ACORD with BM25 hard negatives.
+def mine_hard_negatives_model(
+    queries: list[str],
+    positives: list[str],
+    corpus: list[str],
+    model_path: str = "model",
+    batch_size: int = 64,
+) -> list[str]:
+    """Mine hard negatives using the trained ColBERT model.
+
+    For each query, scores ALL corpus passages with the model and picks
+    the highest-scoring passage that isn't a known positive. These are
+    the passages the model currently confuses — exactly what it needs
+    to learn from in the next round of training.
+
+    This is a second-pass refinement: run BM25 mining first to train an
+    initial model, then use that model to find harder negatives.
+    """
+    import torch
+    from collections import defaultdict
+    from pylate import models
+
+    if not queries:
+        return []
+
+    print(f"Loading ColBERT model from {model_path} for negative mining...")
+    model = models.ColBERT(model_name_or_path=model_path)
+
+    # Build positive lookup
+    query_to_positives = defaultdict(set)
+    for q, p in zip(queries, positives):
+        query_to_positives[q].add(p)
+
+    # Encode corpus once
+    print(f"Encoding {len(corpus)} corpus passages...")
+    corpus_embs = model.encode(corpus, batch_size=batch_size, is_query=False, show_progress_bar=True)
+
+    # Encode queries
+    unique_queries = list(set(queries))
+    print(f"Encoding {len(unique_queries)} unique queries...")
+    query_embs_map = {}
+    for i in range(0, len(unique_queries), batch_size):
+        batch = unique_queries[i:i + batch_size]
+        embs = model.encode(batch, batch_size=batch_size, is_query=True, show_progress_bar=False)
+        for q, emb in zip(batch, embs):
+            query_embs_map[q] = emb
+
+    def colbert_score(q_emb, d_emb):
+        q = torch.tensor(q_emb) if not isinstance(q_emb, torch.Tensor) else q_emb
+        d = torch.tensor(d_emb) if not isinstance(d_emb, torch.Tensor) else d_emb
+        return torch.matmul(q, d.T).max(dim=1).values.sum().item()
+
+    # For each query, find the highest-scoring non-positive
+    print("Scoring and mining hard negatives...")
+    negatives = []
+    for i, (query, positive) in enumerate(zip(queries, positives)):
+        if i % 500 == 0:
+            print(f"  Mining: {i}/{len(queries)}")
+
+        q_emb = query_embs_map[query]
+        all_pos = query_to_positives[query]
+
+        # Score all corpus passages
+        scores = [(ci, colbert_score(q_emb, corpus_embs[ci])) for ci in range(len(corpus))]
+        scores.sort(key=lambda x: x[1], reverse=True)
+
+        # Pick highest-scoring non-positive
+        hard_neg = None
+        for ci, score in scores:
+            if corpus[ci] not in all_pos:
+                hard_neg = corpus[ci]
+                break
+
+        if hard_neg is None:
+            hard_neg = random.choice([c for c in corpus if c != positive])
+
+        negatives.append(hard_neg)
+
+    print(f"  Mined {len(negatives)} model-based hard negatives")
+    return negatives
+
+
+def prepare_training_data(output_dir: str = "data", use_model_negatives: bool = False, model_path: str = "model") -> DatasetDict:
+    """Prepare combined training dataset with hard negatives.
+
+    Args:
+        output_dir: where to save the dataset
+        use_model_negatives: if True, use the trained ColBERT model for negative mining
+            instead of BM25. Requires a trained model at model_path.
+        model_path: path to trained model for model-based negative mining
 
     Returns:
         HuggingFace DatasetDict with train/test splits, columns: query, positive, negative
@@ -398,29 +508,50 @@ def prepare_training_data(output_dir: str = "data") -> DatasetDict:
     cuad_queries, cuad_positives, cuad_corpus = load_cuad_pairs()
     acord_queries, acord_positives, acord_corpus = load_acord_pairs()
     synth_queries, synth_positives, synth_corpus = load_synthetic_pairs()
+    genqa_queries, genqa_positives, genqa_corpus = load_generated_qa()
 
-    # Mine hard negatives separately (each dataset has its own corpus)
-    print("\nMining BM25 hard negatives for CUAD...")
-    cuad_negatives = mine_hard_negatives_bm25(cuad_queries, cuad_positives, cuad_corpus)
+    if use_model_negatives:
+        # Model-based hard negatives: find passages the model currently confuses
+        print(f"\nMining model-based hard negatives (model: {model_path})...")
 
-    acord_negatives = []
-    if acord_queries:
-        print("\nMining BM25 hard negatives for ACORD...")
-        acord_negatives = mine_hard_negatives_bm25(acord_queries, acord_positives, acord_corpus)
+        # Combine all corpora for cross-dataset mining
+        all_corpus = list(set(cuad_corpus + acord_corpus + synth_corpus + genqa_corpus))
+        all_queries_combined = cuad_queries + acord_queries + synth_queries + genqa_queries
+        all_positives_combined = cuad_positives + acord_positives + synth_positives + genqa_positives
 
-    synth_negatives = []
-    if synth_queries:
-        print("\nMining BM25 hard negatives for synthetic queries...")
-        synth_negatives = mine_hard_negatives_bm25(synth_queries, synth_positives, synth_corpus)
+        all_negatives = mine_hard_negatives_model(
+            all_queries_combined, all_positives_combined, all_corpus,
+            model_path=model_path,
+        )
+    else:
+        # BM25 hard negatives (first pass, no trained model needed)
+        print("\nMining BM25 hard negatives for CUAD...")
+        cuad_negatives = mine_hard_negatives_bm25(cuad_queries, cuad_positives, cuad_corpus)
 
-    # Combine
-    all_queries = cuad_queries + acord_queries + synth_queries
-    all_positives = cuad_positives + acord_positives + synth_positives
-    all_negatives = cuad_negatives + acord_negatives + synth_negatives
+        acord_negatives = []
+        if acord_queries:
+            print("\nMining BM25 hard negatives for ACORD...")
+            acord_negatives = mine_hard_negatives_bm25(acord_queries, acord_positives, acord_corpus)
+
+        synth_negatives = []
+        if synth_queries:
+            print("\nMining BM25 hard negatives for synthetic queries...")
+            synth_negatives = mine_hard_negatives_bm25(synth_queries, synth_positives, synth_corpus)
+
+        genqa_negatives = []
+        if genqa_queries:
+            print("\nMining BM25 hard negatives for generated QA...")
+            genqa_negatives = mine_hard_negatives_bm25(genqa_queries, genqa_positives, genqa_corpus)
+
+        all_negatives = cuad_negatives + acord_negatives + synth_negatives + genqa_negatives
+
+    # Combine queries and positives
+    all_queries_combined = cuad_queries + acord_queries + synth_queries + genqa_queries
+    all_positives_combined = cuad_positives + acord_positives + synth_positives + genqa_positives
 
     dataset = Dataset.from_dict({
-        "query": all_queries,
-        "positive": all_positives,
+        "query": all_queries_combined,
+        "positive": all_positives_combined,
         "negative": all_negatives,
     })
 
@@ -436,4 +567,11 @@ def prepare_training_data(output_dir: str = "data") -> DatasetDict:
 
 
 if __name__ == "__main__":
-    prepare_training_data()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model-negatives", action="store_true",
+                        help="Use trained ColBERT model for hard negative mining (requires model/)")
+    parser.add_argument("--model-path", default="model",
+                        help="Path to trained model for model-based mining")
+    args = parser.parse_args()
+    prepare_training_data(use_model_negatives=args.model_negatives, model_path=args.model_path)
