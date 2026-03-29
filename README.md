@@ -156,5 +156,5 @@ ColBERT (Contextualized Late Interaction over BERT) produces per-token embedding
 
 ## Maintainers
 
-- [kmad](https://github.com/kmad0)
+- [kmad](https://github.com/kmad)
 - [Claude](https://claude.ai) (Anthropic)
