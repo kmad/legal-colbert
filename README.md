@@ -8,14 +8,14 @@ Model weights: [kmad00/legal-colbert-v1](https://huggingface.co/kmad00/legal-col
 
 **MLEB Contractual Clause Retrieval** (45 queries, 90 passages):
 
-| Model | Type | NDCG@10 | R@1 | R@10 |
-|---|---|---|---|---|
-| **legal-colbert-v1 (ours)** | ColBERT, fine-tuned | **0.793** | **0.389** | **0.878** |
-| GTE-ModernColBERT-v1 | ColBERT, base | 0.672 | 0.556 | — |
-| BGE-large-en-v1.5 | Bi-encoder, 1024d | 0.737 | 0.644 | — |
-| all-MiniLM-L6-v2 | Bi-encoder, 384d | 0.629 | 0.556 | — |
+| Model | Type | NDCG@10 | MAP | R@1 | R@10 |
+|---|---|---|---|---|---|
+| **legal-colbert-v1 (ours)** | ColBERT, fine-tuned | **0.813** | **0.741** | **0.378** | **0.933** |
+| GTE-ModernColBERT-v1 | ColBERT, base | 0.672 | — | 0.556 | — |
+| BGE-large-en-v1.5 | Bi-encoder, 1024d | 0.737 | — | 0.644 | — |
+| all-MiniLM-L6-v2 | Bi-encoder, 384d | 0.629 | — | 0.556 | — |
 
-Fine-tuning added **+12.1 NDCG@10 points** over the base model (+18% relative).
+Fine-tuning improved NDCG@10 by **+14.1 points** over the base model (+21% relative).
 
 ## Quick Start
 
@@ -96,30 +96,54 @@ For each clause type, runs multiple query variants and takes the best score per 
 
 - **[CUAD](https://huggingface.co/datasets/theatticusproject/cuad-qa)** (CC BY 4.0): 5,449 QA pairs from 510 commercial contracts covering 41 clause types
 - **[ACORD](https://huggingface.co/datasets/theatticusproject/acord)** (CC BY 4.0): 793 query-clause pairs across 9 clause categories with expert relevance ratings
-- **BM25 hard negatives** with keyword overlap filtering to avoid false negatives
+- **Model-based hard negatives**: Uses the trained model itself to find the most confusing non-relevant passages per query (passages the model scores highest but are wrong)
 
 ```bash
-python prepare_data.py   # Download data, mine hard negatives (~6K triplets)
-python train.py --batch-size 16 --num-epochs 10 --temperature 0.05 --bf16
+# First pass: BM25 negatives for initial training
+python prepare_data.py
+
+# Second pass: model-based negatives for harder training signal
+python prepare_data.py --model-negatives --model-path model
 ```
 
 Training takes ~7 minutes on an A100 80GB.
 
-### Hyperparameter Optimization
+### Optimization Journey
 
-Used an autoresearch loop (`research.py` + `program.md`) inspired by [karpathy/autoresearch](https://github.com/karpathy/autoresearch) — greedy hill-climbing over training config, keeping changes that improve NDCG@10:
+Used an autoresearch loop (`research.py` + `program.md`) inspired by [karpathy/autoresearch](https://github.com/karpathy/autoresearch) — greedy hill-climbing over training config, keeping changes that improve NDCG@10.
+
+**Phase 1: Hyperparameter search**
 
 | Experiment | NDCG@10 | Status |
 |---|---|---|
-| Baseline (3ep, temp 0.02) | 0.763 | kept |
+| Baseline (3ep, temp 0.02, BM25 neg) | 0.763 | kept |
 | 5 epochs | 0.772 | kept |
 | Temperature 0.01 | 0.680 | discarded |
 | Temperature 0.05 | 0.773 | kept |
 | LR 1e-5 | 0.746 | discarded |
-| **10 epochs, temp 0.05** | **0.793** | **kept** |
+| 10 epochs, temp 0.05 | 0.793 | kept |
 | 15 epochs + warmup | 0.748 | discarded (overfit) |
 
-Key findings: 10 epochs is the sweet spot (15 overfits), temperature 0.05 > 0.02 >> 0.01, default LR (3e-6) is optimal.
+**Phase 2: Data experiments**
+
+| Experiment | NDCG@10 | Status |
+|---|---|---|
+| + Justia clause category queries | 0.734 | discarded (query distribution mismatch) |
+| + LLM-generated synthetic queries | 0.731 | discarded (same issue) |
+| + More ACORD data (relevance ≥ 2) | 0.775 | discarded (noisy) |
+| Improved BM25 negative filtering | 0.781 | neutral |
+
+**Phase 3: Hard negative mining**
+
+| Experiment | NDCG@10 | Status |
+|---|---|---|
+| **Model-based hard negatives** | **0.813** | **kept — new best** |
+
+Key findings:
+- 10 epochs is the sweet spot (15 overfits)
+- Temperature 0.05 > 0.02 >> 0.01 for contrastive loss
+- More data only helps if the query distribution matches the target task
+- Model-based hard negatives were the single biggest improvement after initial fine-tuning (+2.0 NDCG points)
 
 ### Base Model
 
@@ -137,15 +161,16 @@ ColBERT (Contextualized Late Interaction over BERT) produces per-token embedding
 | `retrieve.py` | Index documents + query with ColBERT MaxSim |
 | `chunk.py` | Semantic document chunker (embedding similarity) |
 | `benchmark.py` | MLEB Contractual Clause Retrieval evaluation |
-| `prepare_data.py` | Training data prep (CUAD + ACORD + BM25 negatives) |
+| `prepare_data.py` | Training data prep (CUAD + ACORD + model-based negatives) |
 | `train.py` | PyLate ColBERT fine-tuning |
-| `research.py` | Autoresearch loop for hyperparameter optimization |
+| `generate_qa.py` | LLM-generated QA pairs from contract texts |
+| `research.py` | Autoresearch loop for iterative optimization |
 | `program.md` | Agent instructions for the research loop |
 | `results.tsv` | Experiment log |
 
 ## License
 
-**CC BY 4.0** — inherited from the training data ([CUAD](https://huggingface.co/datasets/theatticusproject/cuad-qa), [ACORD](https://huggingface.co/datasets/theatricusproject/acord)). Base model is Apache 2.0.
+**CC BY 4.0** — inherited from the training data ([CUAD](https://huggingface.co/datasets/theatticusproject/cuad-qa), [ACORD](https://huggingface.co/datasets/theatticusproject/acord)). Base model is Apache 2.0.
 
 ## Acknowledgments
 
