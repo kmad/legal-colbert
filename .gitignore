@@ -1,20 +1,32 @@
 __pycache__/
 *.pyc
 *.egg-info/
+
+# Training artifacts
 output/
 wandb/
-.env
-*.pt
-pylate-index/
-legal-index/
-model/
 data/
-mleb/
-*.pdf
-*.md.bak
+model/
+*.pt
+
+# Index files
+legal-index/
+pylate-index/
+
+# Scraped/generated data
+justia_*.json
 justia_*.md
-pactiv_contract.txt
-justia_dataset.json
-justia_contracts.json
 synthetic_queries.json
-justia_clauses.json
+pactiv_contract.txt
+
+# Secrets
+.env
+
+# Test documents
+*.pdf
+
+# Editor
+*.md.bak
+
+# External repos
+mleb/
