@@ -433,8 +433,10 @@ def mine_hard_negatives_model(
     if not queries:
         return []
 
-    print(f"Loading ColBERT model from {model_path} for negative mining...")
-    model = models.ColBERT(model_name_or_path=model_path)
+    import torch as _torch
+    device = "cuda" if _torch.cuda.is_available() else "cpu"
+    print(f"Loading ColBERT model from {model_path} for negative mining (device={device})...")
+    model = models.ColBERT(model_name_or_path=model_path, device=device)
 
     # Build positive lookup
     query_to_positives = defaultdict(set)
@@ -455,36 +457,56 @@ def mine_hard_negatives_model(
         for q, emb in zip(batch, embs):
             query_embs_map[q] = emb
 
-    def colbert_score(q_emb, d_emb):
-        q = torch.tensor(q_emb) if not isinstance(q_emb, torch.Tensor) else q_emb
-        d = torch.tensor(d_emb) if not isinstance(d_emb, torch.Tensor) else d_emb
-        return torch.matmul(q, d.T).max(dim=1).values.sum().item()
+    # Build positive index set for fast lookup: for each query, which corpus indices are positive
+    corpus_lookup = {text: idx for idx, text in enumerate(corpus)}
+    query_pos_indices = defaultdict(set)
+    for q, p in zip(queries, positives):
+        if p in corpus_lookup:
+            query_pos_indices[q].add(corpus_lookup[p])
 
-    # For each query, find the highest-scoring non-positive
-    print("Scoring and mining hard negatives...")
-    negatives = []
-    for i, (query, positive) in enumerate(zip(queries, positives)):
-        if i % 500 == 0:
-            print(f"  Mining: {i}/{len(queries)}")
+    # Batch score: for each unique query, compute MaxSim against all corpus docs
+    # We score in chunks to fit in GPU memory
+    print("Batch scoring queries against corpus...")
+    query_top_negs = {}  # query → list of (corpus_idx, score) sorted desc, non-positives only
+    scored = 0
 
-        q_emb = query_embs_map[query]
-        all_pos = query_to_positives[query]
+    for q in unique_queries:
+        q_emb = torch.tensor(query_embs_map[q])
+        pos_indices = query_pos_indices[q]
 
-        # Score all corpus passages
-        scores = [(ci, colbert_score(q_emb, corpus_embs[ci])) for ci in range(len(corpus))]
-        scores.sort(key=lambda x: x[1], reverse=True)
+        # Score against all corpus — do in chunks of 500 for memory
+        all_scores = []
+        for start in range(0, len(corpus), 500):
+            end = min(start + 500, len(corpus))
+            batch_scores = []
+            for ci in range(start, end):
+                d = torch.tensor(corpus_embs[ci])
+                s = torch.matmul(q_emb, d.T).max(dim=1).values.sum().item()
+                batch_scores.append((ci, s))
+            all_scores.extend(batch_scores)
 
-        # Pick highest-scoring non-positive
-        hard_neg = None
-        for ci, score in scores:
-            if corpus[ci] not in all_pos:
-                hard_neg = corpus[ci]
+        # Sort descending, find best non-positive
+        all_scores.sort(key=lambda x: x[1], reverse=True)
+        best_neg_idx = None
+        for ci, score in all_scores:
+            if ci not in pos_indices:
+                best_neg_idx = ci
                 break
+        query_top_negs[q] = best_neg_idx
 
-        if hard_neg is None:
-            hard_neg = random.choice([c for c in corpus if c != positive])
+        scored += 1
+        if scored % 100 == 0:
+            print(f"  Scored {scored}/{len(unique_queries)} unique queries")
 
-        negatives.append(hard_neg)
+    # Map back to per-example negatives
+    print("Assembling negatives...")
+    negatives = []
+    for query, positive in zip(queries, positives):
+        neg_idx = query_top_negs.get(query)
+        if neg_idx is not None:
+            negatives.append(corpus[neg_idx])
+        else:
+            negatives.append(random.choice([c for c in corpus if c != positive]))
 
     print(f"  Mined {len(negatives)} model-based hard negatives")
     return negatives
