@@ -130,20 +130,26 @@ def extract_clauses(
     model: models.ColBERT,
     clause_types: list[str] | None = None,
     top_k: int = 3,
-) -> dict[str, list[tuple[Chunk, float]]]:
+    context_window: int = 1,
+    min_distance: int = 3,
+) -> dict[str, list[tuple[str, float, int]]]:
     """Extract specific clause types from pre-chunked document.
 
     For each clause type, runs multiple query variants and returns
-    the best-scoring chunks across all variants.
+    diverse, high-scoring results with surrounding context. Handles
+    clauses that appear in multiple sections of the contract.
 
     Args:
         chunks: document chunks to search
         model: ColBERT model
         clause_types: list of clause types to extract (default: all)
-        top_k: number of results per clause type
+        top_k: number of distinct mentions to return per clause type
+        context_window: number of chunks before/after to include as context
+        min_distance: minimum chunk distance between results to ensure diversity
+            (prevents returning overlapping chunks from the same section)
 
     Returns:
-        dict mapping clause type → list of (chunk, score) tuples
+        dict mapping clause type → list of (text_with_context, score, chunk_index) tuples
     """
     if clause_types is None:
         clause_types = list(CLAUSE_QUERIES.keys())
@@ -176,14 +182,36 @@ def extract_clauses(
                 if i not in chunk_best_scores or score > chunk_best_scores[i]:
                     chunk_best_scores[i] = score
 
-        # Rank and return top-k
+        # Rank all chunks by score
         ranked = sorted(chunk_best_scores.items(), key=lambda x: x[1], reverse=True)
-        results[clause_type] = [(chunks[i], score) for i, score in ranked[:top_k]]
+
+        # Select top-k DIVERSE results (separated by min_distance chunks)
+        selected = []
+        selected_indices = set()
+        for idx, score in ranked:
+            if len(selected) >= top_k:
+                break
+            # Skip if too close to an already-selected chunk
+            if any(abs(idx - sel_idx) < min_distance for sel_idx in selected_indices):
+                continue
+            selected.append((idx, score))
+            selected_indices.add(idx)
+
+        # Build context: include +/- context_window chunks around each hit
+        clause_results = []
+        for idx, score in selected:
+            start = max(0, idx - context_window)
+            end = min(len(chunks), idx + context_window + 1)
+            context_texts = [chunks[i].text for i in range(start, end)]
+            full_text = "\n\n".join(context_texts)
+            clause_results.append((full_text, score, idx))
+
+        results[clause_type] = clause_results
 
     return results
 
 
-def print_extraction(results: dict[str, list[tuple[Chunk, float]]]):
+def print_extraction(results: dict[str, list[tuple[str, float, int]]]):
     """Pretty-print extracted clauses."""
     for clause_type, matches in results.items():
         print(f"\n{'='*80}")
@@ -194,18 +222,18 @@ def print_extraction(results: dict[str, list[tuple[Chunk, float]]]):
             print("  No matches found.")
             continue
 
-        for i, (chunk, score) in enumerate(matches):
-            tokens = estimate_tokens(chunk.text)
-            print(f"\n  [{i+1}] Score: {score:.1f}  (~{tokens} tokens)")
+        for i, (text, score, chunk_idx) in enumerate(matches):
+            tokens = estimate_tokens(text)
+            print(f"\n  [{i+1}] Score: {score:.1f}  (~{tokens} tokens, chunk #{chunk_idx})")
             # Show full text for top result, preview for others
             if i == 0:
-                text = chunk.text[:600].replace("\n", "\n      ")
-                print(f"      {text}")
-                if len(chunk.text) > 600:
+                display = text[:800].replace("\n", "\n      ")
+                print(f"      {display}")
+                if len(text) > 800:
                     print(f"      ...")
             else:
-                text = chunk.text[:200].replace("\n", "\n      ")
-                print(f"      {text}...")
+                display = text[:300].replace("\n", "\n      ")
+                print(f"      {display}...")
 
 
 if __name__ == "__main__":
