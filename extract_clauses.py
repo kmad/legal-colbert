@@ -131,7 +131,7 @@ def extract_clauses(
     clause_types: list[str] | None = None,
     top_k: int = 3,
     context_window: int = 1,
-    min_distance: int = 3,
+    max_overlap: float = 0.5,
 ) -> dict[str, list[tuple[str, float, int]]]:
     """Extract specific clause types from pre-chunked document.
 
@@ -145,8 +145,10 @@ def extract_clauses(
         clause_types: list of clause types to extract (default: all)
         top_k: number of distinct mentions to return per clause type
         context_window: number of chunks before/after to include as context
-        min_distance: minimum chunk distance between results to ensure diversity
-            (prevents returning overlapping chunks from the same section)
+        max_overlap: maximum Jaccard word overlap between results (0-1).
+            Results with higher overlap than this are considered duplicates
+            and skipped. 0.5 means two chunks sharing >50% of their words
+            are treated as the same content.
 
     Returns:
         dict mapping clause type → list of (text_with_context, score, chunk_index) tuples
@@ -185,17 +187,34 @@ def extract_clauses(
         # Rank all chunks by score
         ranked = sorted(chunk_best_scores.items(), key=lambda x: x[1], reverse=True)
 
-        # Select top-k DIVERSE results (separated by min_distance chunks)
+        # Select top-k DIVERSE results using content deduplication
+        # Skip results whose text overlaps heavily with already-selected results
         selected = []
-        selected_indices = set()
+        selected_texts = []
         for idx, score in ranked:
             if len(selected) >= top_k:
                 break
-            # Skip if too close to an already-selected chunk
-            if any(abs(idx - sel_idx) < min_distance for sel_idx in selected_indices):
-                continue
+
+            candidate_text = chunks[idx].text
+            # Check word overlap with already-selected results
+            if selected_texts:
+                candidate_words = set(candidate_text.lower().split())
+                is_duplicate = False
+                for prev_text in selected_texts:
+                    prev_words = set(prev_text.lower().split())
+                    if not candidate_words or not prev_words:
+                        continue
+                    intersection = len(candidate_words & prev_words)
+                    union = len(candidate_words | prev_words)
+                    jaccard = intersection / union if union > 0 else 0
+                    if jaccard > max_overlap:
+                        is_duplicate = True
+                        break
+                if is_duplicate:
+                    continue
+
             selected.append((idx, score))
-            selected_indices.add(idx)
+            selected_texts.append(candidate_text)
 
         # Build context: include +/- context_window chunks around each hit
         clause_results = []
