@@ -2,8 +2,8 @@
 
 NDCG@10 values are pulled live from the official MLEB results.jsonl (not typed by
 hand). Parameter counts are verified per-model (HF cards / model papers). Our
-point (legal-colbert-v9) is measured locally with the same protocol that
-reproduces the leaderboard's BGE-M3 score exactly (0.7281).
+point (legal-colbert-p6b, 149,015,808 params) is measured locally (0.8338) with
+the same protocol that reproduces the leaderboard's BGE-M3 score exactly (0.7281).
 """
 
 import json
@@ -63,7 +63,7 @@ for mid, p in PARAMS.items():
     else:
         print("WARN missing score:", mid)
 
-OURS = (149_015_808, 82.34, "legal-colbert (ours)")
+OURS = (149_015_808, 83.38, "legal-colbert (ours)")  # P6b, measured locally
 
 print("plotted points:")
 for p, s, n in sorted(pts) + [OURS]:

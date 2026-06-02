@@ -59,6 +59,9 @@ def train(args: argparse.Namespace) -> None:
         save_steps=args.save_steps,
         save_total_limit=3,
         logging_steps=args.logging_steps,
+        max_steps=args.max_steps,
+        seed=args.seed,
+        data_seed=args.seed,
         run_name=args.run_name,
         load_best_model_at_end=True,
         metric_for_best_model="accuracy",
@@ -112,6 +115,13 @@ def main() -> None:
     parser.add_argument("--eval-steps", type=int, default=500)
     parser.add_argument("--save-steps", type=int, default=500)
     parser.add_argument("--logging-steps", type=int, default=50)
+    parser.add_argument(
+        "--max-steps",
+        type=int,
+        default=-1,
+        help="Stop after this many optimizer steps; -1 uses the epoch count.",
+    )
+    parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--eval-triplets", type=int, default=512)
     parser.add_argument("--bf16", action="store_true")
     parser.add_argument("--fp16", action="store_true")
