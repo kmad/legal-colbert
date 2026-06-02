@@ -128,7 +128,6 @@ Used an autoresearch loop (`research.py` + `program.md`) inspired by [karpathy/a
 
 | Experiment | NDCG@10 | Status |
 |---|---|---|
-| + Justia clause category queries | 0.734 | discarded (query distribution mismatch) |
 | + LLM-generated synthetic queries | 0.731 | discarded (same issue) |
 | + More ACORD data (relevance ≥ 2) | 0.775 | discarded (noisy) |
 | Improved BM25 negative filtering | 0.781 | neutral |

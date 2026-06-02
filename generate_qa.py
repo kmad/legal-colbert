@@ -93,7 +93,7 @@ def chunk_contract(text: str, target_size: int = 1500) -> list[str]:
 
 
 def generate_qa_from_contracts(
-    contracts_path: str = "justia_contracts.json",
+    contracts_path: str = "contracts.json",
     output_path: str = "generated_qa.json",
     max_contracts: int | None = None,
     max_passages_per_contract: int = 20,
@@ -154,6 +154,6 @@ def generate_qa_from_contracts(
 
 
 if __name__ == "__main__":
-    contracts_path = sys.argv[1] if len(sys.argv) > 1 else "justia_contracts.json"
+    contracts_path = sys.argv[1] if len(sys.argv) > 1 else "contracts.json"
     max_contracts = int(sys.argv[2]) if len(sys.argv) > 2 else None
     generate_qa_from_contracts(contracts_path, max_contracts=max_contracts)

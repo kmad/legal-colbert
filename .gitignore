@@ -14,8 +14,6 @@ legal-index/
 pylate-index/
 
 # Scraped/generated data
-justia_*.json
-justia_*.md
 synthetic_queries.json
 pactiv_contract.txt
 
