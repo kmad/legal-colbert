@@ -1,0 +1,202 @@
+{
+  "label": "V9",
+  "split": "clause_test",
+  "n_categories": 38,
+  "macro_ndcg@10": 0.5673,
+  "macro_map": 0.4499,
+  "macro_ndcg@10_n>=5": 0.6099,
+  "macro_map_n>=5": 0.4881,
+  "n_big_categories": 33,
+  "per_category": {
+    "Third Party Beneficiary": {
+      "ndcg@10": 0.0,
+      "map": 0.0054,
+      "n_relevant": 1
+    },
+    "Price Restrictions": {
+      "ndcg@10": 0.0,
+      "map": 0.0377,
+      "n_relevant": 6
+    },
+    "Covenant Not To Sue": {
+      "ndcg@10": 0.1357,
+      "map": 0.1102,
+      "n_relevant": 18
+    },
+    "Affiliate License-Licensee": {
+      "ndcg@10": 0.1672,
+      "map": 0.0931,
+      "n_relevant": 3
+    },
+    "Competitive Restriction Exception": {
+      "ndcg@10": 0.214,
+      "map": 0.1106,
+      "n_relevant": 5
+    },
+    "Volume Restriction": {
+      "ndcg@10": 0.2394,
+      "map": 0.1682,
+      "n_relevant": 18
+    },
+    "Uncapped Liability": {
+      "ndcg@10": 0.2519,
+      "map": 0.2432,
+      "n_relevant": 4
+    },
+    "Effective Date": {
+      "ndcg@10": 0.2743,
+      "map": 0.2414,
+      "n_relevant": 31
+    },
+    "Unlimited/All-You-Can-Eat-License": {
+      "ndcg@10": 0.3869,
+      "map": 0.2,
+      "n_relevant": 1
+    },
+    "Expiration Date": {
+      "ndcg@10": 0.3949,
+      "map": 0.3195,
+      "n_relevant": 40
+    },
+    "Renewal Term": {
+      "ndcg@10": 0.4194,
+      "map": 0.412,
+      "n_relevant": 15
+    },
+    "Agreement Date": {
+      "ndcg@10": 0.4545,
+      "map": 0.2686,
+      "n_relevant": 35
+    },
+    "Non-Compete": {
+      "ndcg@10": 0.4695,
+      "map": 0.2468,
+      "n_relevant": 22
+    },
+    "Termination For Convenience": {
+      "ndcg@10": 0.4944,
+      "map": 0.4187,
+      "n_relevant": 28
+    },
+    "Change Of Control": {
+      "ndcg@10": 0.5216,
+      "map": 0.2713,
+      "n_relevant": 30
+    },
+    "Post-Termination Services": {
+      "ndcg@10": 0.531,
+      "map": 0.383,
+      "n_relevant": 36
+    },
+    "Minimum Commitment": {
+      "ndcg@10": 0.531,
+      "map": 0.4684,
+      "n_relevant": 35
+    },
+    "Non-Transferable License": {
+      "ndcg@10": 0.5696,
+      "map": 0.5078,
+      "n_relevant": 11
+    },
+    "Parties": {
+      "ndcg@10": 0.5716,
+      "map": 0.6623,
+      "n_relevant": 183
+    },
+    "Liquidated Damages": {
+      "ndcg@10": 0.5869,
+      "map": 0.3618,
+      "n_relevant": 23
+    },
+    "Notice Period To Terminate Renewal": {
+      "ndcg@10": 0.5959,
+      "map": 0.5578,
+      "n_relevant": 11
+    },
+    "Ip Ownership Assignment": {
+      "ndcg@10": 0.5989,
+      "map": 0.3195,
+      "n_relevant": 16
+    },
+    "Warranty Duration": {
+      "ndcg@10": 0.6236,
+      "map": 0.4159,
+      "n_relevant": 20
+    },
+    "Non-Disparagement": {
+      "ndcg@10": 0.6257,
+      "map": 0.4498,
+      "n_relevant": 3
+    },
+    "Most Favored Nation": {
+      "ndcg@10": 0.6448,
+      "map": 0.6065,
+      "n_relevant": 6
+    },
+    "Document Name": {
+      "ndcg@10": 0.6749,
+      "map": 0.326,
+      "n_relevant": 41
+    },
+    "Irrevocable Or Perpetual License": {
+      "ndcg@10": 0.6995,
+      "map": 0.7237,
+      "n_relevant": 10
+    },
+    "Cap On Liability": {
+      "ndcg@10": 0.7126,
+      "map": 0.5311,
+      "n_relevant": 40
+    },
+    "Exclusivity": {
+      "ndcg@10": 0.7624,
+      "map": 0.4373,
+      "n_relevant": 29
+    },
+    "Revenue/Profit Sharing": {
+      "ndcg@10": 0.767,
+      "map": 0.5999,
+      "n_relevant": 31
+    },
+    "Anti-Assignment": {
+      "ndcg@10": 0.8522,
+      "map": 0.7393,
+      "n_relevant": 53
+    },
+    "No-Solicit Of Employees": {
+      "ndcg@10": 0.876,
+      "map": 0.8143,
+      "n_relevant": 6
+    },
+    "Governing Law": {
+      "ndcg@10": 0.9364,
+      "map": 0.83,
+      "n_relevant": 37
+    },
+    "Joint Ip Ownership": {
+      "ndcg@10": 0.9747,
+      "map": 0.9267,
+      "n_relevant": 5
+    },
+    "License Grant": {
+      "ndcg@10": 1.0,
+      "map": 0.7364,
+      "n_relevant": 48
+    },
+    "Audit Rights": {
+      "ndcg@10": 1.0,
+      "map": 0.9107,
+      "n_relevant": 55
+    },
+    "Insurance": {
+      "ndcg@10": 1.0,
+      "map": 0.9018,
+      "n_relevant": 46
+    },
+    "Rofr/Rofo/Rofn": {
+      "ndcg@10": 1.0,
+      "map": 0.7405,
+      "n_relevant": 33
+    }
+  }
+}

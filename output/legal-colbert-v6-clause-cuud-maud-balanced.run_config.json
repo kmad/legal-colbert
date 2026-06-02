@@ -1,0 +1,20 @@
+{
+  "data_dir": "data_v6_clause_cuad_maud_balanced",
+  "model_name": "model",
+  "output_dir": "output/legal-colbert-v6-clause-cuud-maud-balanced",
+  "copy_to_model": "",
+  "run_name": "legal-colbert-v2",
+  "batch_size": 16,
+  "gradient_accumulation_steps": 2,
+  "num_epochs": 1,
+  "learning_rate": 1e-06,
+  "temperature": 0.05,
+  "warmup_ratio": 0.05,
+  "eval_steps": 500,
+  "save_steps": 500,
+  "logging_steps": 50,
+  "eval_triplets": 512,
+  "bf16": true,
+  "fp16": false,
+  "train_triplets": 106984
+}
