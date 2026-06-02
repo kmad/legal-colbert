@@ -5,8 +5,6 @@ Design goals:
   - keep MLEB out of training;
   - preserve ACORD graded relevance and original splits;
   - split CUAD by source contract/title where possible;
-  - use Justia clauses as hard-negative / clause-to-clause data, not as
-    broad category-query positives;
   - emit PyLate-compatible triplets by expanding multi-negative records.
 
 Outputs:
@@ -56,70 +54,6 @@ STOPWORDS = {
     "respect", "written", "notice", "provide", "whether", "including",
     "without", "limitation", "connection", "accordance", "event",
     "otherwise", "provisions", "provision", "terms", "term",
-}
-
-
-JUSTIA_QUERY_TEMPLATES = {
-    "assignment": [
-        "restrictions on assigning rights or obligations under the agreement",
-        "whether consent is required before a party may assign the contract",
-    ],
-    "change of control": [
-        "contractual consequences of a merger acquisition or change in control",
-        "rights triggered by a change in ownership or control",
-    ],
-    "confidentiality": [
-        "obligations to protect and not disclose confidential information",
-        "exceptions and permitted disclosures for confidential information",
-    ],
-    "dispute resolution": [
-        "procedure for resolving disputes between the parties",
-        "arbitration mediation venue or forum selection for disputes",
-    ],
-    "events of default": [
-        "events that constitute default or breach under the agreement",
-        "failure to pay perform or comply as an event of default",
-    ],
-    "force majeure": [
-        "excused performance for events beyond a party's reasonable control",
-        "force majeure events such as war pandemic disasters or government action",
-    ],
-    "governing law": [
-        "which jurisdiction's law governs interpretation of the agreement",
-        "choice of law provision for the contract",
-    ],
-    "indemnification": [
-        "duty to indemnify defend and hold harmless against losses or claims",
-        "indemnity obligations for third party claims damages and expenses",
-    ],
-    "intellectual property": [
-        "ownership license or use of intellectual property under the agreement",
-        "rights in inventions patents copyrights trademarks or trade secrets",
-    ],
-    "limitation of liability": [
-        "cap on liability or exclusion of consequential damages",
-        "limits on recoverable damages and aggregate liability",
-    ],
-    "non-competition": [
-        "restriction on competing during or after the agreement",
-        "non-compete restrictive covenant obligations",
-    ],
-    "payment": [
-        "amounts payable invoicing payment schedule and late charges",
-        "payment obligations and timing under the agreement",
-    ],
-    "severability": [
-        "effect if a provision is invalid illegal or unenforceable",
-        "remaining provisions continue despite unenforceable terms",
-    ],
-    "termination": [
-        "right to terminate for cause convenience breach or notice",
-        "circumstances under which the agreement may be ended",
-    ],
-    "waiver of jury trial": [
-        "waiver of right to trial by jury",
-        "parties waive jury trial for disputes under the agreement",
-    ],
 }
 
 
@@ -549,7 +483,7 @@ def load_cuad_records(
     return records, eval_files
 
 
-def load_justia_json(path: Path) -> list[dict]:
+def load_labeled_clause_json(path: Path) -> list[dict]:
     if not path.exists():
         return []
     with open(path) as f:
@@ -573,52 +507,6 @@ def load_justia_json(path: Path) -> list[dict]:
     return rows
 
 
-def justia_records(rows: list[dict], negatives_per_positive: int, max_per_label: int, rng: random.Random) -> list[dict]:
-    if not rows:
-        return []
-    by_label = defaultdict(list)
-    for row in rows:
-        if row["label"] in JUSTIA_QUERY_TEMPLATES:
-            by_label[row["label"]].append(row["text"])
-
-    sampled = {}
-    for label, texts in by_label.items():
-        texts = list(dict.fromkeys(texts))
-        rng.shuffle(texts)
-        sampled[label] = texts[:max_per_label]
-
-    all_texts = [text for texts in sampled.values() for text in texts]
-    records = []
-    for label, texts in sampled.items():
-        same_family = set(texts)
-        confounders = [
-            text for other_label, other_texts in sampled.items()
-            if other_label != label
-            for text in other_texts
-        ]
-        rng.shuffle(confounders)
-        for i, text in enumerate(texts):
-            queries = JUSTIA_QUERY_TEMPLATES[label]
-            query = queries[i % len(queries)]
-            # Prefer cross-label confounders; add a same-label clause-to-clause
-            # negative only when the text is not the positive, making this a
-            # subtype discrimination task instead of category memorization.
-            negatives = [n for n in confounders if n not in same_family][:negatives_per_positive]
-            if len(texts) > 1 and len(negatives) < negatives_per_positive:
-                near = [t for t in texts if t != text]
-                rng.shuffle(near)
-                negatives.extend(near[: negatives_per_positive - len(negatives)])
-            if negatives:
-                records.append({
-                    "source": "justia",
-                    "query": query,
-                    "positive": text,
-                    "negatives": negatives[:negatives_per_positive],
-                    "positive_grade": 1,
-                })
-    return records
-
-
 def extra_json_records(
     path: Path,
     corpus: list[str],
@@ -628,7 +516,7 @@ def extra_json_records(
 ) -> list[dict]:
     if repeat < 1 or not path.exists():
         return []
-    rows = load_justia_json(path)
+    rows = load_labeled_clause_json(path)
     if not rows:
         with open(path) as f:
             data = json.load(f)
@@ -734,10 +622,7 @@ def write_json(path: Path, obj: object) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output-dir", default="data_v2")
-    parser.add_argument("--justia-json", default="justia_dataset.json")
-    parser.add_argument("--include-justia", action="store_true")
     parser.add_argument("--negatives-per-positive", type=int, default=6)
-    parser.add_argument("--justia-max-per-label", type=int, default=750)
     parser.add_argument("--cuad-dev-fraction", type=float, default=0.10)
     parser.add_argument("--cuad-test-fraction", type=float, default=0.10)
     parser.add_argument(
@@ -900,20 +785,6 @@ def main() -> None:
         extra_count = len(extra)
         print(f"  Extra JSON training records: {extra_count}")
 
-    justia_count = 0
-    if args.include_justia:
-        print("Loading Justia JSON...")
-        justia_rows = load_justia_json(Path(args.justia_json))
-        justia = justia_records(
-            justia_rows,
-            args.negatives_per_positive,
-            args.justia_max_per_label,
-            rng,
-        )
-        records.extend(justia)
-        justia_count = len(justia)
-        print(f"  Justia training records: {justia_count}")
-
     dataset = expand_triplets(records, rng)
     dataset.save_to_disk(str(out / "train"))
 
@@ -985,7 +856,6 @@ def main() -> None:
             "acord_records": len([r for r in records if r["source"].startswith("acord")]),
             "cuad_records": len(cuad),
             "maud_records": maud_count,
-            "justia_records": justia_count,
             "extra_json_records": extra_count,
         },
         "eval_splits": eval_manifest,
