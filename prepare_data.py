@@ -146,26 +146,45 @@ def load_acord_pairs() -> tuple[list[str], list[str], list[str]]:
     return queries, positives, corpus
 
 
-def load_generated_qa(dataset_path: str = "generated_qa.json") -> tuple[list[str], list[str], list[str]]:
+def load_generated_qa(
+    dataset_paths: list[str] = ("generated_qa.json", "augmented_training.json"),
+) -> tuple[list[str], list[str], list[str]]:
     """Load LLM-generated QA pairs from full contracts.
+
+    Checks multiple paths: generate_qa.py output and text-albumentations output.
 
     Returns:
         queries, positives, corpus
     """
     import json
 
-    if not Path(dataset_path).exists():
-        print(f"  Generated QA not found at {dataset_path}, skipping")
-        return [], [], []
+    queries = []
+    positives = []
+    all_passages = set()
 
-    print(f"Loading generated QA from {dataset_path}...")
-    with open(dataset_path) as f:
-        pairs = json.load(f)
+    for dataset_path in dataset_paths:
+        if not Path(dataset_path).exists():
+            continue
 
-    queries = [p["query"] for p in pairs if p.get("query")]
-    positives = [p["positive"] for p in pairs if p.get("positive")]
-    corpus = list({p["positive"] for p in pairs if p.get("positive")})
-    print(f"  Generated QA: {len(queries)} pairs, {len(corpus)} unique passages")
+        print(f"Loading generated QA from {dataset_path}...")
+        with open(dataset_path) as f:
+            pairs = json.load(f)
+
+        for p in pairs:
+            q = p.get("query", "")
+            pos = p.get("positive", "")
+            if q and pos and len(q) > 10:
+                queries.append(q)
+                positives.append(pos)
+                all_passages.add(pos)
+
+        print(f"  {dataset_path}: {len(pairs)} pairs loaded")
+
+    corpus = list(all_passages)
+    if queries:
+        print(f"  Total generated QA: {len(queries)} pairs, {len(corpus)} unique passages")
+    else:
+        print("  No generated QA data found, skipping")
     return queries, positives, corpus
 
 

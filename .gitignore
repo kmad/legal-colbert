@@ -31,3 +31,6 @@ pactiv_contract.txt
 # External repos
 mleb/
 generated_qa.json
+*_contract.txt
+cuad_contracts_for_qa.json
+augmented_*.json

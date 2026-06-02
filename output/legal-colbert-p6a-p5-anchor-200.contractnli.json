@@ -1,0 +1,82 @@
+{
+  "label": "legal-colbert-p6a-p5-anchor-200",
+  "split": "contractnli_test",
+  "n_categories": 14,
+  "macro_ndcg@10": 0.3285,
+  "macro_map": 0.28,
+  "macro_ndcg@10_n>=5": 0.3285,
+  "macro_map_n>=5": 0.28,
+  "n_big_categories": 14,
+  "per_category": {
+    "Confidentiality Of Agreement": {
+      "ndcg@10": 0.0,
+      "map": 0.0918,
+      "n_relevant": 14
+    },
+    "Limited Use": {
+      "ndcg@10": 0.0,
+      "map": 0.0808,
+      "n_relevant": 14
+    },
+    "Sharing With Third Parties": {
+      "ndcg@10": 0.0784,
+      "map": 0.1282,
+      "n_relevant": 14
+    },
+    "Explicit Identification": {
+      "ndcg@10": 0.2201,
+      "map": 0.2578,
+      "n_relevant": 14
+    },
+    "Permissible Post Agreement Possession": {
+      "ndcg@10": 0.2212,
+      "map": 0.2146,
+      "n_relevant": 14
+    },
+    "Sharing With Employees": {
+      "ndcg@10": 0.2337,
+      "map": 0.2792,
+      "n_relevant": 14
+    },
+    "Inclusion Of Verbally Conveyed Information": {
+      "ndcg@10": 0.3031,
+      "map": 0.2167,
+      "n_relevant": 14
+    },
+    "No Licensing": {
+      "ndcg@10": 0.3758,
+      "map": 0.2199,
+      "n_relevant": 14
+    },
+    "Permissible Acquirement Of Similar Information": {
+      "ndcg@10": 0.4085,
+      "map": 0.2287,
+      "n_relevant": 14
+    },
+    "Return Of Confidential Information": {
+      "ndcg@10": 0.4284,
+      "map": 0.2845,
+      "n_relevant": 14
+    },
+    "Permissible Development Of Similar Information": {
+      "ndcg@10": 0.4695,
+      "map": 0.4647,
+      "n_relevant": 14
+    },
+    "Permissible Copy": {
+      "ndcg@10": 0.5232,
+      "map": 0.3452,
+      "n_relevant": 14
+    },
+    "Notice On Compelled Disclosure": {
+      "ndcg@10": 0.5431,
+      "map": 0.5208,
+      "n_relevant": 14
+    },
+    "Survival Of Obligations": {
+      "ndcg@10": 0.7936,
+      "map": 0.5876,
+      "n_relevant": 14
+    }
+  }
+}

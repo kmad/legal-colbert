@@ -1,0 +1,13 @@
+{
+  "ndcg@5": 0.5831,
+  "ndcg@10": 0.591,
+  "map": 0.4904,
+  "recall@1": 0.0159,
+  "recall@5": 0.0719,
+  "recall@10": 0.1486,
+  "precision4@5": 0.5622,
+  "queries": 37,
+  "corpus": 1453,
+  "qrels": 1453,
+  "relevant_threshold": 1
+}

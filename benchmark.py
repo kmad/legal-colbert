@@ -6,9 +6,11 @@ Compares our fine-tuned ColBERT against:
   - General-purpose bi-encoders (BGE-large, MiniLM)
 
 Usage:
-    python benchmark.py
+    python benchmark.py --model model --output-json output/mleb.json
 """
 
+import argparse
+import json
 import numpy as np
 from datasets import load_dataset
 
@@ -134,30 +136,38 @@ def _compute_metrics(query_ids, corpus_ids, q_embs, c_embs, qrels, score_fn, lab
     return label, results
 
 
-if __name__ == "__main__":
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model", default="model")
+    parser.add_argument("--label", default="legal-colbert")
+    parser.add_argument("--output-json")
+    parser.add_argument(
+        "--compare-baselines",
+        action="store_true",
+        help="Also evaluate base ColBERT and two bi-encoder baselines.",
+    )
+    args = parser.parse_args()
+
     corpus, queries, qrels = load_benchmark()
     print(f"Loaded: {len(queries)} queries, {len(corpus)} passages, {len(qrels)} qrels")
 
     all_results = []
 
-    # Our fine-tuned model
-    all_results.append(eval_colbert("model", corpus, queries, qrels, "legal-colbert-v1 (ours)"))
+    all_results.append(eval_colbert(args.model, corpus, queries, qrels, args.label))
 
-    # Base model
-    all_results.append(eval_colbert(
-        "lightonai/GTE-ModernColBERT-v1", corpus, queries, qrels,
-        "GTE-ModernColBERT-v1 (base)",
-    ))
-
-    # General-purpose bi-encoders
-    all_results.append(eval_biencoder(
-        "BAAI/bge-large-en-v1.5", corpus, queries, qrels,
-        "BGE-large-en-v1.5",
-    ))
-    all_results.append(eval_biencoder(
-        "all-MiniLM-L6-v2", corpus, queries, qrels,
-        "all-MiniLM-L6-v2",
-    ))
+    if args.compare_baselines:
+        all_results.append(eval_colbert(
+            "lightonai/GTE-ModernColBERT-v1", corpus, queries, qrels,
+            "GTE-ModernColBERT-v1 (base)",
+        ))
+        all_results.append(eval_biencoder(
+            "BAAI/bge-large-en-v1.5", corpus, queries, qrels,
+            "BGE-large-en-v1.5",
+        ))
+        all_results.append(eval_biencoder(
+            "all-MiniLM-L6-v2", corpus, queries, qrels,
+            "all-MiniLM-L6-v2",
+        ))
 
     # Summary table
     print(f"\n{'='*70}")
@@ -167,3 +177,11 @@ if __name__ == "__main__":
     print(f"{'-'*70}")
     for label, r in all_results:
         print(f"{label:<35} {r['NDCG@10']:>8.4f} {r['MAP']:>8.4f} {r['Recall@1']:>8.4f} {r['Recall@10']:>8.4f}")
+
+    if args.output_json:
+        with open(args.output_json, "w") as f:
+            json.dump({label: metrics for label, metrics in all_results}, f, indent=2)
+
+
+if __name__ == "__main__":
+    main()
