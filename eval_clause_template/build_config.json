@@ -1,0 +1,7 @@
+{
+  "output_dir": "eval_clause_template",
+  "dev_fraction": 0.1,
+  "test_fraction": 0.1,
+  "window": 256,
+  "query_style": "template"
+}

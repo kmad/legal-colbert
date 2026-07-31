@@ -1,0 +1,14 @@
+{
+  "source": "SEC EDGAR current filings feed and public Archives Exhibit 10 documents",
+  "contract_count": 28,
+  "attempted_exhibit_documents": 38,
+  "feed_forms": [
+    "8-K"
+  ],
+  "feed_count": 100,
+  "feed_pages": 16,
+  "min_words": 800,
+  "max_words": 35000,
+  "sec_user_agent": "legal-colbert-overfit-check contact@example.com",
+  "errors": []
+}

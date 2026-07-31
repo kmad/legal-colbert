@@ -1,0 +1,23 @@
+{
+  "base_data_dir": "data_p3_ledgar_docside",
+  "anchor_data_dir": "data_p2a_acord_cuad",
+  "anchor_source_prefix": "acord",
+  "anchor_repeat": 2,
+  "base_triplets": 89220,
+  "anchor_triplets": 12996,
+  "mixed_triplets": 115212,
+  "base_columns": [
+    "query",
+    "positive",
+    "negative",
+    "source",
+    "positive_grade"
+  ],
+  "anchor_columns": [
+    "query",
+    "positive",
+    "negative",
+    "source",
+    "positive_grade"
+  ]
+}

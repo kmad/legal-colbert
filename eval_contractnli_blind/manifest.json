@@ -1,0 +1,83 @@
+{
+  "seed": 42,
+  "source": "nguha/legalbench ContractNLI tasks",
+  "split": "test",
+  "queries": 14,
+  "corpus": 392,
+  "qrels": 196,
+  "max_positive_per_task": 14,
+  "max_distractor_per_task": 14,
+  "min_words": 8,
+  "tasks": {
+    "contract_nli_confidentiality_of_agreement": {
+      "query": "Find provisions showing that the existence or terms of the agreement must be kept confidential.",
+      "positive_rows": 14,
+      "distractor_rows": 14
+    },
+    "contract_nli_explicit_identification": {
+      "query": "Find provisions requiring confidential information to be marked, designated, or otherwise explicitly identified as confidential.",
+      "positive_rows": 14,
+      "distractor_rows": 14
+    },
+    "contract_nli_inclusion_of_verbally_conveyed_information": {
+      "query": "Find provisions stating that orally or verbally disclosed information can be confidential information.",
+      "positive_rows": 14,
+      "distractor_rows": 14
+    },
+    "contract_nli_limited_use": {
+      "query": "Find provisions limiting use of confidential information to a permitted purpose.",
+      "positive_rows": 14,
+      "distractor_rows": 14
+    },
+    "contract_nli_no_licensing": {
+      "query": "Find provisions stating that disclosure of confidential information does not grant a license or intellectual property rights.",
+      "positive_rows": 14,
+      "distractor_rows": 14
+    },
+    "contract_nli_notice_on_compelled_disclosure": {
+      "query": "Find provisions requiring notice before compelled disclosure of confidential information.",
+      "positive_rows": 14,
+      "distractor_rows": 14
+    },
+    "contract_nli_permissible_acquirement_of_similar_information": {
+      "query": "Find provisions allowing use of similar information acquired lawfully from another source or already known.",
+      "positive_rows": 14,
+      "distractor_rows": 14
+    },
+    "contract_nli_permissible_copy": {
+      "query": "Find provisions permitting or restricting copies of confidential information.",
+      "positive_rows": 14,
+      "distractor_rows": 14
+    },
+    "contract_nli_permissible_development_of_similar_information": {
+      "query": "Find provisions allowing independent development of similar information without using confidential information.",
+      "positive_rows": 14,
+      "distractor_rows": 14
+    },
+    "contract_nli_permissible_post-agreement_possession": {
+      "query": "Find provisions allowing possession or retention of confidential information after the agreement ends.",
+      "positive_rows": 14,
+      "distractor_rows": 14
+    },
+    "contract_nli_return_of_confidential_information": {
+      "query": "Find provisions requiring confidential information to be returned or destroyed.",
+      "positive_rows": 14,
+      "distractor_rows": 14
+    },
+    "contract_nli_sharing_with_employees": {
+      "query": "Find provisions permitting confidential information to be shared with employees, affiliates, or representatives.",
+      "positive_rows": 14,
+      "distractor_rows": 14
+    },
+    "contract_nli_sharing_with_third-parties": {
+      "query": "Find provisions permitting confidential information to be shared with third parties.",
+      "positive_rows": 14,
+      "distractor_rows": 14
+    },
+    "contract_nli_survival_of_obligations": {
+      "query": "Find provisions stating that confidentiality or other obligations survive termination or expiration.",
+      "positive_rows": 14,
+      "distractor_rows": 14
+    }
+  }
+}

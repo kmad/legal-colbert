@@ -1,0 +1,64 @@
+{
+  "seed": 42,
+  "triplets": 107496,
+  "multi_negative_records": 17916,
+  "negatives_per_positive": 6,
+  "acord_repeat": 0,
+  "cuad_max_records": 0,
+  "include_maud": true,
+  "maud_repeat": 1,
+  "maud_max_records": 8958,
+  "extra_json": "",
+  "extra_repeat": 1,
+  "sources": {
+    "acord_records": 0,
+    "cuad_records": 8958,
+    "maud_records": 8958,
+    "justia_records": 0,
+    "extra_json_records": 0
+  },
+  "eval_splits": {
+    "acord_valid": {
+      "source": "ACORD valid split",
+      "queries": 6,
+      "corpus": 1792,
+      "qrels": 6142
+    },
+    "acord_test": {
+      "source": "ACORD test split",
+      "queries": 57,
+      "corpus": 2365,
+      "qrels": 61988
+    },
+    "cuad_dev": {
+      "source": "CUAD held-out dev contracts",
+      "queries": 41,
+      "corpus": 1074,
+      "qrels": 1183
+    },
+    "cuad_test": {
+      "source": "CUAD held-out test contracts",
+      "queries": 38,
+      "corpus": 940,
+      "qrels": 1038
+    },
+    "maud_validation": {
+      "source": "MAUD validation split",
+      "queries": 144,
+      "corpus": 3066,
+      "qrels": 6745
+    },
+    "maud_test": {
+      "source": "MAUD test split",
+      "queries": 144,
+      "corpus": 2631,
+      "qrels": 6651
+    }
+  },
+  "dev": {
+    "source": "ACORD valid split",
+    "queries": 6,
+    "corpus": 1792,
+    "qrels": 6142
+  }
+}

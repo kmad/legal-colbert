@@ -1,0 +1,11 @@
+{
+  "seed": 42,
+  "window": 256,
+  "negatives": 15,
+  "balance_ceiling": 400,
+  "n_queries": 41,
+  "n_documents": 6590,
+  "n_train_rows": 7522,
+  "candidates_per_row": 16,
+  "query_style": "mleb_definitions"
+}

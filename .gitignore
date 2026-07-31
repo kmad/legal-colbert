@@ -32,3 +32,6 @@ generated_qa.json
 *_contract.txt
 cuad_contracts_for_qa.json
 augmented_*.json
+
+# Generated training datasets (regenerable from builders; manifests are tracked)
+data_*/

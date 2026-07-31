@@ -1,0 +1,562 @@
+[
+  {
+    "query_id": "edgar-q-3fb23a7344069389",
+    "clause_type": "indemnification",
+    "doc_id": "edgar-d-fa75d1ad46321fd0",
+    "heading": "Indemnification and Contribution.",
+    "contract_id": "edgar-feed-1651721-0001193125-26-251789-gipr-ex10_1.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/1651721/000119312526251789/gipr-ex10_1.htm"
+  },
+  {
+    "query_id": "edgar-q-f26b63d628c9b567",
+    "clause_type": "assignment",
+    "doc_id": "edgar-d-d14063a54ece7948",
+    "heading": "Transfer and Exchange of Warrants.",
+    "contract_id": "edgar-feed-1651721-0001193125-26-251789-gipr-ex10_4.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/1651721/000119312526251789/gipr-ex10_4.htm"
+  },
+  {
+    "query_id": "edgar-q-6c7bb645cc16acc8",
+    "clause_type": "change_of_control",
+    "doc_id": "edgar-d-ef048c7eea850134",
+    "heading": "Resignation, Consolidation, or Merger of Warrant Agent.",
+    "contract_id": "edgar-feed-1651721-0001193125-26-251789-gipr-ex10_4.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/1651721/000119312526251789/gipr-ex10_4.htm"
+  },
+  {
+    "query_id": "edgar-q-e86256b2787ee7ff",
+    "clause_type": "payment",
+    "doc_id": "edgar-d-7a5583bb9ce34a8d",
+    "heading": "Fees and Expenses of Warrant Agent.",
+    "contract_id": "edgar-feed-1651721-0001193125-26-251789-gipr-ex10_4.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/1651721/000119312526251789/gipr-ex10_4.htm"
+  },
+  {
+    "query_id": "edgar-q-3fb23a7344069389",
+    "clause_type": "indemnification",
+    "doc_id": "edgar-d-1cdb62c2931faa85",
+    "heading": "Additional Indemnity.",
+    "contract_id": "edgar-feed-2064307-0002064307-26-000007-logc-ex10_1.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/2064307/000206430726000007/logc-ex10_1.htm"
+  },
+  {
+    "query_id": "edgar-q-f16381b97820014b",
+    "clause_type": "termination",
+    "doc_id": "edgar-d-d2c81d35d2f9bf79",
+    "heading": "TERMINATION",
+    "contract_id": "edgar-feed-354647-0001193125-26-251450-cvbf-ex10_1.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/354647/000119312526251450/cvbf-ex10_1.htm"
+  },
+  {
+    "query_id": "edgar-q-fbab88e1c6c2106b",
+    "clause_type": "confidentiality",
+    "doc_id": "edgar-d-ce775cddfb2dc80b",
+    "heading": "Company Confidential Information and Trade Secrets.",
+    "contract_id": "edgar-feed-354647-0001193125-26-251450-cvbf-ex10_1.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/354647/000119312526251450/cvbf-ex10_1.htm"
+  },
+  {
+    "query_id": "edgar-q-f16381b97820014b",
+    "clause_type": "termination",
+    "doc_id": "edgar-d-78d21b468929a2b7",
+    "heading": "Termination of Employment with Bank Liability",
+    "contract_id": "edgar-feed-846617-0000943374-26-000219-ex10-1_8k052826.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/846617/000094337426000219/ex10-1_8k052826.htm"
+  },
+  {
+    "query_id": "edgar-q-f16381b97820014b",
+    "clause_type": "termination",
+    "doc_id": "edgar-d-6ba92c21d12178ac",
+    "heading": "Termination without Additional Bank or Company Liability",
+    "contract_id": "edgar-feed-846617-0000943374-26-000219-ex10-1_8k052826.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/846617/000094337426000219/ex10-1_8k052826.htm"
+  },
+  {
+    "query_id": "edgar-q-fbab88e1c6c2106b",
+    "clause_type": "confidentiality",
+    "doc_id": "edgar-d-7b94ce6d7747d67e",
+    "heading": "Confidentiality.",
+    "contract_id": "edgar-feed-846617-0000943374-26-000219-ex10-1_8k052826.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/846617/000094337426000219/ex10-1_8k052826.htm"
+  },
+  {
+    "query_id": "edgar-q-3fb23a7344069389",
+    "clause_type": "indemnification",
+    "doc_id": "edgar-d-96f10059494bf1eb",
+    "heading": "Indemnification and",
+    "contract_id": "edgar-feed-846617-0000943374-26-000219-ex10-1_8k052826.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/846617/000094337426000219/ex10-1_8k052826.htm"
+  },
+  {
+    "query_id": "edgar-q-51586ec659573475",
+    "clause_type": "notices",
+    "doc_id": "edgar-d-9d15b1ddbfc15ca3",
+    "heading": "Notices. The",
+    "contract_id": "edgar-feed-846617-0000943374-26-000219-ex10-1_8k052826.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/846617/000094337426000219/ex10-1_8k052826.htm"
+  },
+  {
+    "query_id": "edgar-q-f16381b97820014b",
+    "clause_type": "termination",
+    "doc_id": "edgar-d-27569b6fb4d6f5ad",
+    "heading": "Termination of Prior",
+    "contract_id": "edgar-feed-846617-0000943374-26-000219-ex10-1_8k052826.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/846617/000094337426000219/ex10-1_8k052826.htm"
+  },
+  {
+    "query_id": "edgar-q-f16381b97820014b",
+    "clause_type": "termination",
+    "doc_id": "edgar-d-e83cf0c768043475",
+    "heading": "Termination of Employment with Bank Liability",
+    "contract_id": "edgar-feed-846617-0000943374-26-000219-ex10-2_8k052826.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/846617/000094337426000219/ex10-2_8k052826.htm"
+  },
+  {
+    "query_id": "edgar-q-f16381b97820014b",
+    "clause_type": "termination",
+    "doc_id": "edgar-d-9e7440e93168be3e",
+    "heading": "Termination without Additional Bank or Company Liability",
+    "contract_id": "edgar-feed-846617-0000943374-26-000219-ex10-2_8k052826.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/846617/000094337426000219/ex10-2_8k052826.htm"
+  },
+  {
+    "query_id": "edgar-q-fbab88e1c6c2106b",
+    "clause_type": "confidentiality",
+    "doc_id": "edgar-d-c90a441d444dea73",
+    "heading": "Confidentiality.",
+    "contract_id": "edgar-feed-846617-0000943374-26-000219-ex10-2_8k052826.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/846617/000094337426000219/ex10-2_8k052826.htm"
+  },
+  {
+    "query_id": "edgar-q-3fb23a7344069389",
+    "clause_type": "indemnification",
+    "doc_id": "edgar-d-69a9b56d220423cc",
+    "heading": "Indemnification and",
+    "contract_id": "edgar-feed-846617-0000943374-26-000219-ex10-2_8k052826.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/846617/000094337426000219/ex10-2_8k052826.htm"
+  },
+  {
+    "query_id": "edgar-q-51586ec659573475",
+    "clause_type": "notices",
+    "doc_id": "edgar-d-bc58c19a512748a6",
+    "heading": "Notices. The",
+    "contract_id": "edgar-feed-846617-0000943374-26-000219-ex10-2_8k052826.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/846617/000094337426000219/ex10-2_8k052826.htm"
+  },
+  {
+    "query_id": "edgar-q-f16381b97820014b",
+    "clause_type": "termination",
+    "doc_id": "edgar-d-1b2a388e2bb26eb2",
+    "heading": "Termination of Prior",
+    "contract_id": "edgar-feed-846617-0000943374-26-000219-ex10-2_8k052826.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/846617/000094337426000219/ex10-2_8k052826.htm"
+  },
+  {
+    "query_id": "edgar-q-f16381b97820014b",
+    "clause_type": "termination",
+    "doc_id": "edgar-d-86739bd87f1326a2",
+    "heading": "Termination of Employment with Bank Liability",
+    "contract_id": "edgar-feed-846617-0000943374-26-000219-ex10-3_8k052826.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/846617/000094337426000219/ex10-3_8k052826.htm"
+  },
+  {
+    "query_id": "edgar-q-f16381b97820014b",
+    "clause_type": "termination",
+    "doc_id": "edgar-d-381e35b212753032",
+    "heading": "Termination without Additional Bank or Company Liability",
+    "contract_id": "edgar-feed-846617-0000943374-26-000219-ex10-3_8k052826.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/846617/000094337426000219/ex10-3_8k052826.htm"
+  },
+  {
+    "query_id": "edgar-q-fbab88e1c6c2106b",
+    "clause_type": "confidentiality",
+    "doc_id": "edgar-d-77b0c12e42cea7ff",
+    "heading": "Confidentiality.",
+    "contract_id": "edgar-feed-846617-0000943374-26-000219-ex10-3_8k052826.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/846617/000094337426000219/ex10-3_8k052826.htm"
+  },
+  {
+    "query_id": "edgar-q-3fb23a7344069389",
+    "clause_type": "indemnification",
+    "doc_id": "edgar-d-18092b95aca202e5",
+    "heading": "Indemnification",
+    "contract_id": "edgar-feed-846617-0000943374-26-000219-ex10-3_8k052826.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/846617/000094337426000219/ex10-3_8k052826.htm"
+  },
+  {
+    "query_id": "edgar-q-51586ec659573475",
+    "clause_type": "notices",
+    "doc_id": "edgar-d-20c4cd48be38950c",
+    "heading": "Notices.",
+    "contract_id": "edgar-feed-846617-0000943374-26-000219-ex10-3_8k052826.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/846617/000094337426000219/ex10-3_8k052826.htm"
+  },
+  {
+    "query_id": "edgar-q-f16381b97820014b",
+    "clause_type": "termination",
+    "doc_id": "edgar-d-2a76543968a1338c",
+    "heading": "Termination",
+    "contract_id": "edgar-feed-846617-0000943374-26-000219-ex10-3_8k052826.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/846617/000094337426000219/ex10-3_8k052826.htm"
+  },
+  {
+    "query_id": "edgar-q-d13d9b17307d6106",
+    "clause_type": "representations_warranties",
+    "doc_id": "edgar-d-e02d30173373108a",
+    "heading": "REPRESENTATIONS AND WARRANTIES",
+    "contract_id": "edgar-feed-1855474-0001193125-26-249857-airj-ex10_1.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/1855474/000119312526249857/airj-ex10_1.htm"
+  },
+  {
+    "query_id": "edgar-q-3fb23a7344069389",
+    "clause_type": "indemnification",
+    "doc_id": "edgar-d-8d71063728beb23f",
+    "heading": "INDEMNIFICATION.",
+    "contract_id": "edgar-feed-1855474-0001193125-26-249857-airj-ex10_2.htm",
+    "ticker": "",
+    "filing_date": "2026-06-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/1855474/000119312526249857/airj-ex10_2.htm"
+  },
+  {
+    "query_id": "edgar-q-d13d9b17307d6106",
+    "clause_type": "representations_warranties",
+    "doc_id": "edgar-d-e7eb6be6e7b41c53",
+    "heading": "REPRESENTATIONS",
+    "contract_id": "edgar-feed-2030763-0001493152-26-026452-ex10-1.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/2030763/000149315226026452/ex10-1.htm"
+  },
+  {
+    "query_id": "edgar-q-d13d9b17307d6106",
+    "clause_type": "representations_warranties",
+    "doc_id": "edgar-d-9464078ac7c4e526",
+    "heading": "Representations",
+    "contract_id": "edgar-feed-2030763-0001493152-26-026452-ex10-1.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/2030763/000149315226026452/ex10-1.htm"
+  },
+  {
+    "query_id": "edgar-q-f26b63d628c9b567",
+    "clause_type": "assignment",
+    "doc_id": "edgar-d-852768f276ff7c92",
+    "heading": "Transfer Restrictions.",
+    "contract_id": "edgar-feed-2030763-0001493152-26-026452-ex10-1.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/2030763/000149315226026452/ex10-1.htm"
+  },
+  {
+    "query_id": "edgar-q-f16381b97820014b",
+    "clause_type": "termination",
+    "doc_id": "edgar-d-b872d94f6a26a4c0",
+    "heading": "Termination.",
+    "contract_id": "edgar-feed-2030763-0001493152-26-026452-ex10-1.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/2030763/000149315226026452/ex10-1.htm"
+  },
+  {
+    "query_id": "edgar-q-3fb23a7344069389",
+    "clause_type": "indemnification",
+    "doc_id": "edgar-d-c2edbe703cb25513",
+    "heading": "Indemnification",
+    "contract_id": "edgar-feed-2030763-0001493152-26-026452-ex10-2.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/2030763/000149315226026452/ex10-2.htm"
+  },
+  {
+    "query_id": "edgar-q-3fb23a7344069389",
+    "clause_type": "indemnification",
+    "doc_id": "edgar-d-285060448ffa2ffe",
+    "heading": "Indemnification",
+    "contract_id": "edgar-feed-2030763-0001493152-26-026452-ex10-2.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/2030763/000149315226026452/ex10-2.htm"
+  },
+  {
+    "query_id": "edgar-q-51586ec659573475",
+    "clause_type": "notices",
+    "doc_id": "edgar-d-6be8cd8fad804985",
+    "heading": "Notices.",
+    "contract_id": "edgar-feed-2030763-0001493152-26-026452-ex10-2.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/2030763/000149315226026452/ex10-2.htm"
+  },
+  {
+    "query_id": "edgar-q-f16381b97820014b",
+    "clause_type": "termination",
+    "doc_id": "edgar-d-1369f9f8f5aa0079",
+    "heading": "Term and Termination of Agreement.",
+    "contract_id": "edgar-feed-2030763-0001493152-26-026452-ex10-3.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/2030763/000149315226026452/ex10-3.htm"
+  },
+  {
+    "query_id": "edgar-q-d13d9b17307d6106",
+    "clause_type": "representations_warranties",
+    "doc_id": "edgar-d-e28fb4682239efde",
+    "heading": "Representations, Warranties and Covenants of the Company.",
+    "contract_id": "edgar-feed-2030763-0001493152-26-026452-ex10-3.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/2030763/000149315226026452/ex10-3.htm"
+  },
+  {
+    "query_id": "edgar-q-f03ba404afb6fcb2",
+    "clause_type": "survival",
+    "doc_id": "edgar-d-6af01a18e35405a8",
+    "heading": "Survival Of Indemnities, Representations, Warranties, Etc.",
+    "contract_id": "edgar-feed-2030763-0001493152-26-026452-ex10-3.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/2030763/000149315226026452/ex10-3.htm"
+  },
+  {
+    "query_id": "edgar-q-d13d9b17307d6106",
+    "clause_type": "representations_warranties",
+    "doc_id": "edgar-d-6af01a18e35405a8",
+    "heading": "Survival Of Indemnities, Representations, Warranties, Etc.",
+    "contract_id": "edgar-feed-2030763-0001493152-26-026452-ex10-3.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/2030763/000149315226026452/ex10-3.htm"
+  },
+  {
+    "query_id": "edgar-q-5479427831e41fbc",
+    "clause_type": "governing_law",
+    "doc_id": "edgar-d-2ef604921e640fa7",
+    "heading": "Governing Law.",
+    "contract_id": "edgar-feed-2030763-0001493152-26-026452-ex10-3.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/2030763/000149315226026452/ex10-3.htm"
+  },
+  {
+    "query_id": "edgar-q-51586ec659573475",
+    "clause_type": "notices",
+    "doc_id": "edgar-d-790f1aec9226b478",
+    "heading": "Notices.",
+    "contract_id": "edgar-feed-2030763-0001493152-26-026452-ex10-3.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/2030763/000149315226026452/ex10-3.htm"
+  },
+  {
+    "query_id": "edgar-q-f16381b97820014b",
+    "clause_type": "termination",
+    "doc_id": "edgar-d-c2780cfc021af621",
+    "heading": "Amendment and Termination of the Plan.",
+    "contract_id": "edgar-feed-1858848-0001193125-26-248680-tnya-ex10_1.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/1858848/000119312526248680/tnya-ex10_1.htm"
+  },
+  {
+    "query_id": "edgar-q-f26b63d628c9b567",
+    "clause_type": "assignment",
+    "doc_id": "edgar-d-8e775823d0022229",
+    "heading": "Transfer",
+    "contract_id": "edgar-feed-1948864-0001493152-26-026419-ex10-1.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/1948864/000149315226026419/ex10-1.htm"
+  },
+  {
+    "query_id": "edgar-q-d13d9b17307d6106",
+    "clause_type": "representations_warranties",
+    "doc_id": "edgar-d-dccf88536492a110",
+    "heading": "Representations",
+    "contract_id": "edgar-feed-1948864-0001493152-26-026419-ex10-1.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/1948864/000149315226026419/ex10-1.htm"
+  },
+  {
+    "query_id": "edgar-q-f16381b97820014b",
+    "clause_type": "termination",
+    "doc_id": "edgar-d-9c6309ef1fee2c36",
+    "heading": "Termination.",
+    "contract_id": "edgar-feed-1948864-0001493152-26-026419-ex10-1.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/1948864/000149315226026419/ex10-1.htm"
+  },
+  {
+    "query_id": "edgar-q-e86256b2787ee7ff",
+    "clause_type": "payment",
+    "doc_id": "edgar-d-8f122720ca6d15f2",
+    "heading": "Taxes.",
+    "contract_id": "edgar-feed-1109116-0001193125-26-248445-evc-ex10_1.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/1109116/000119312526248445/evc-ex10_1.htm"
+  },
+  {
+    "query_id": "edgar-q-f16381b97820014b",
+    "clause_type": "termination",
+    "doc_id": "edgar-d-e1177a3bd553ab68",
+    "heading": "Termination of Employment.",
+    "contract_id": "edgar-feed-1737995-0001493152-26-026381-ex10-1.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/1737995/000149315226026381/ex10-1.htm"
+  },
+  {
+    "query_id": "edgar-q-f16381b97820014b",
+    "clause_type": "termination",
+    "doc_id": "edgar-d-8133c3894260bcc7",
+    "heading": "Obligations of the Company Upon Termination.",
+    "contract_id": "edgar-feed-1737995-0001493152-26-026381-ex10-1.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/1737995/000149315226026381/ex10-1.htm"
+  },
+  {
+    "query_id": "edgar-q-60623e9844ad6709",
+    "clause_type": "intellectual_property",
+    "doc_id": "edgar-d-9d96b21425ee3619",
+    "heading": "Inventions.",
+    "contract_id": "edgar-feed-1737995-0001493152-26-026381-ex10-1.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/1737995/000149315226026381/ex10-1.htm"
+  },
+  {
+    "query_id": "edgar-q-51586ec659573475",
+    "clause_type": "notices",
+    "doc_id": "edgar-d-e68a7607cf62ff28",
+    "heading": "Notice to the Participant shall be addressed and delivered",
+    "contract_id": "edgar-feed-890821-0001493152-26-026364-ex10-1.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/890821/000149315226026364/ex10-1.htm"
+  },
+  {
+    "query_id": "edgar-q-51586ec659573475",
+    "clause_type": "notices",
+    "doc_id": "edgar-d-849a6e05859042a8",
+    "heading": "Notice.",
+    "contract_id": "edgar-feed-890821-0001493152-26-026364-ex10-2.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/890821/000149315226026364/ex10-2.htm"
+  },
+  {
+    "query_id": "edgar-q-d13d9b17307d6106",
+    "clause_type": "representations_warranties",
+    "doc_id": "edgar-d-44c273062feb5684",
+    "heading": "REPRESENTATIONS",
+    "contract_id": "edgar-feed-2019793-0001493152-26-025723-ex10-1.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/2019793/000149315226025723/ex10-1.htm"
+  },
+  {
+    "query_id": "edgar-q-51586ec659573475",
+    "clause_type": "notices",
+    "doc_id": "edgar-d-1e1bbfb5547f4d4b",
+    "heading": "Notices.",
+    "contract_id": "edgar-feed-1923891-0001493152-26-025709-ex10-2.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/1923891/000149315226025709/ex10-2.htm"
+  },
+  {
+    "query_id": "edgar-q-fbab88e1c6c2106b",
+    "clause_type": "confidentiality",
+    "doc_id": "edgar-d-f23ec84bd2df1c02",
+    "heading": "Confidentiality.",
+    "contract_id": "edgar-feed-1923891-0001493152-26-025709-ex10-3.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/1923891/000149315226025709/ex10-3.htm"
+  },
+  {
+    "query_id": "edgar-q-fbab88e1c6c2106b",
+    "clause_type": "confidentiality",
+    "doc_id": "edgar-d-0e61300a6e48a170",
+    "heading": "Confidentiality and Intellectual Property.",
+    "contract_id": "edgar-feed-1923891-0001493152-26-025709-ex10-4.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/1923891/000149315226025709/ex10-4.htm"
+  },
+  {
+    "query_id": "edgar-q-60623e9844ad6709",
+    "clause_type": "intellectual_property",
+    "doc_id": "edgar-d-0e61300a6e48a170",
+    "heading": "Confidentiality and Intellectual Property.",
+    "contract_id": "edgar-feed-1923891-0001493152-26-025709-ex10-4.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/1923891/000149315226025709/ex10-4.htm"
+  },
+  {
+    "query_id": "edgar-q-c45d52897f1c1ec7",
+    "clause_type": "dispute_resolution",
+    "doc_id": "edgar-d-bc2f2048510cc60e",
+    "heading": "demand for arbitration with JAMS.",
+    "contract_id": "edgar-feed-1923891-0001493152-26-025709-ex10-4.htm",
+    "ticker": "",
+    "filing_date": "2026-05-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/1923891/000149315226025709/ex10-4.htm"
+  }
+]

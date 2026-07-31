@@ -1,0 +1,98 @@
+{
+  "seed": 42,
+  "triplets": 58128,
+  "multi_negative_records": 9688,
+  "negatives_per_positive": 6,
+  "acord_repeat": 6,
+  "cuad_max_records": 0,
+  "cuad_balance_ceiling": 400,
+  "cuad_balance_floor": 0,
+  "cuad_train_window": 256,
+  "cuad_balance_counts": {
+    "Affiliate License-Licensee": 77,
+    "Affiliate License-Licensor": 44,
+    "Agreement Date": 309,
+    "Anti-Assignment": 400,
+    "Audit Rights": 396,
+    "Cap On Liability": 400,
+    "Change Of Control": 137,
+    "Competitive Restriction Exception": 82,
+    "Covenant Not To Sue": 103,
+    "Document Name": 338,
+    "Effective Date": 296,
+    "Exclusivity": 264,
+    "Expiration Date": 305,
+    "Governing Law": 299,
+    "Insurance": 341,
+    "Ip Ownership Assignment": 212,
+    "Irrevocable Or Perpetual License": 124,
+    "Joint Ip Ownership": 86,
+    "License Grant": 400,
+    "Liquidated Damages": 67,
+    "Minimum Commitment": 278,
+    "Most Favored Nation": 26,
+    "No-Solicit Of Customers": 34,
+    "No-Solicit Of Employees": 59,
+    "Non-Compete": 155,
+    "Non-Disparagement": 47,
+    "Non-Transferable License": 220,
+    "Notice Period To Terminate Renewal": 80,
+    "Parties": 400,
+    "Post-Termination Services": 297,
+    "Price Restrictions": 14,
+    "Renewal Term": 146,
+    "Revenue/Profit Sharing": 255,
+    "Rofr/Rofo/Rofn": 227,
+    "Source Code Escrow": 50,
+    "Termination For Convenience": 157,
+    "Third Party Beneficiary": 22,
+    "Uncapped Liability": 132,
+    "Unlimited/All-You-Can-Eat-License": 18,
+    "Volume Restriction": 101,
+    "Warranty Duration": 124
+  },
+  "include_maud": false,
+  "maud_repeat": 1,
+  "maud_max_records": 0,
+  "extra_json": "",
+  "extra_repeat": 1,
+  "sources": {
+    "acord_records": 2166,
+    "cuad_records": 7522,
+    "maud_records": 0,
+    "justia_records": 0,
+    "extra_json_records": 0
+  },
+  "eval_splits": {
+    "acord_valid": {
+      "source": "ACORD valid split",
+      "queries": 6,
+      "corpus": 1792,
+      "qrels": 6142
+    },
+    "acord_test": {
+      "source": "ACORD test split",
+      "queries": 57,
+      "corpus": 2365,
+      "qrels": 61988
+    },
+    "cuad_dev": {
+      "source": "CUAD held-out dev contracts",
+      "queries": 41,
+      "corpus": 1074,
+      "qrels": 1183
+    },
+    "cuad_test": {
+      "source": "CUAD held-out test contracts",
+      "queries": 38,
+      "corpus": 940,
+      "qrels": 1038
+    }
+  },
+  "dev": {
+    "source": "ACORD valid split",
+    "queries": 6,
+    "corpus": 1792,
+    "qrels": 6142
+  }
+}

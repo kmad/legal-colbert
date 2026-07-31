@@ -1,0 +1,17 @@
+{
+  "seed": 42,
+  "triplets": 61212,
+  "multi_negative_records": 10202,
+  "negatives_per_positive": 6,
+  "sources": {
+    "acord_records": 205,
+    "cuad_records": 9997,
+    "justia_records": 0
+  },
+  "dev": {
+    "source": "ACORD valid split",
+    "queries": 6,
+    "corpus": 1792,
+    "qrels": 6142
+  }
+}

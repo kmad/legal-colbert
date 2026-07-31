@@ -25,16 +25,16 @@ from chunk import Chunk, chunk_pdf
 INDEX_DIR = "legal-index"
 CHUNKS_PATH = "legal-index/chunks.pkl"
 EMBEDDINGS_PATH = "legal-index/embeddings.pkl"
-DEFAULT_MODEL = "kmad00/legal-colbert-v1"
+DEFAULT_MODEL = "kmad00/legal-colbert-clause-retriever"  # P6b, current best (MLEB 0.834)
 
 
 def load_model(model_name: str = DEFAULT_MODEL) -> models.ColBERT:
-    """Load the ColBERT model. Uses local model/ dir if available."""
-    local_model = Path("model")
-    if local_model.exists() and (local_model / "model.safetensors").exists():
-        print(f"Loading model from local: {local_model}")
-        return models.ColBERT(model_name_or_path=str(local_model))
-    print(f"Loading model from HuggingFace: {model_name}")
+    """Load the ColBERT model (HF repo id or local path).
+
+    Note: the local model/ dir holds V1 (kept for training continuations);
+    pass it explicitly if you want the old weights.
+    """
+    print(f"Loading model: {model_name}")
     return models.ColBERT(model_name_or_path=model_name)
 
 
