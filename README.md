@@ -2,20 +2,32 @@
 
 A fine-tuned ColBERT model for legal contract clause retrieval, with a complete pipeline for chunking, indexing, querying, and benchmarking.
 
-Model weights: [kmad00/legal-colbert-v1](https://huggingface.co/kmad00/legal-colbert-v1) (CC BY 4.0)
+Current model weights (P6b, best): [kmad00/legal-colbert-clause-retriever](https://huggingface.co/kmad00/legal-colbert-clause-retriever) (CC BY 4.0).
+The original V1 remains at [kmad00/legal-colbert-v1](https://huggingface.co/kmad00/legal-colbert-v1).
+Full experiment log (V1 → P6b, all eval protocols): [`../CURRENT_STATUS.md`](../CURRENT_STATUS.md).
 
 ## Benchmark
 
 **MLEB Contractual Clause Retrieval** (45 queries, 90 passages):
 
-| Model | Type | NDCG@10 | MAP | R@1 | R@10 |
-|---|---|---|---|---|---|
-| **legal-colbert-v1 (ours)** | ColBERT, fine-tuned | **0.813** | **0.741** | **0.378** | **0.933** |
-| GTE-ModernColBERT-v1 | ColBERT, base | 0.672 | — | 0.556 | — |
-| BGE-large-en-v1.5 | Bi-encoder, 1024d | 0.737 | — | 0.644 | — |
-| all-MiniLM-L6-v2 | Bi-encoder, 384d | 0.629 | — | 0.556 | — |
+| Model | Type | NDCG@10 | MAP | R@10 |
+|---|---|---|---|---|
+| **legal-colbert-clause-retriever / P6b (ours)** | ColBERT, fine-tuned | **0.834** | **0.771** | **0.956** |
+| legal-colbert-v1 (ours, original) | ColBERT, fine-tuned | 0.813 | 0.741 | 0.933 |
+| BGE-M3 | Bi-encoder | 0.728 | — | — |
+| GTE-ModernColBERT-v1 | ColBERT, base | 0.672 | — | — |
+| BM25 (stopword-filtered) | Lexical baseline | 0.619 | 0.554 | 0.756 |
 
-Fine-tuning improved NDCG@10 by **+14.1 points** over the base model (+21% relative).
+At 149M parameters, P6b ranks in the top open models on this task — ahead of EmbeddingGemma (308M), Jina v4 (3.8B), and every OpenAI/Google general embedder; behind only Voyage 4 / Kanon 2 / Qwen3-4B+. Fine-tuning lifted the base model by +16.2 NDCG points.
+
+## Query phrasing matters
+
+The model is strongly query-phrasing sensitive (see the P0 ablation in `../CURRENT_STATUS.md`): it is trained and evaluated with **descriptive clause definitions**, not keyword or template queries. Phrase queries the way MLEB does:
+
+- ✅ `"Find contractual provisions governing termination rights, termination for cause, or the consequences of ending the agreement."`
+- ⚠️ `"termination clause"` (terse/keyword queries can flip rankings)
+
+If you're building an application on top, map user inputs to descriptive clause definitions before retrieval.
 
 ## Quick Start
 
@@ -136,7 +148,17 @@ Used an autoresearch loop (`research.py` + `program.md`) inspired by [karpathy/a
 
 | Experiment | NDCG@10 | Status |
 |---|---|---|
-| **Model-based hard negatives** | **0.813** | **kept — new best** |
+| Model-based hard negatives | 0.813 | kept — became V1 |
+
+**Phase 4: Continuation rounds (V2–P6, 2026-05/06)** — documented in full in [`../CURRENT_STATUS.md`](../CURRENT_STATUS.md):
+
+| Experiment | NDCG@10 | Status |
+|---|---|---|
+| V4 CUAD-only light continuation | 0.821 | kept |
+| V9 clean spans + gentle balance | 0.823 | kept |
+| P1 distillation / P2 query paraphrases | 0.694–0.757 | discarded (query-side tuning regresses) |
+| P5 tiny LEDGAR doc-side continuation | 0.828 | kept |
+| **P6b P5 + ACORD-anchor 300 steps** | **0.834** | **kept — current best** |
 
 Key findings:
 - 10 epochs is the sweet spot (15 overfits)

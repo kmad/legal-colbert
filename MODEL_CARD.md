@@ -1,4 +1,7 @@
 ---
+# NOTE: This is the V1 model card, kept for the historical record.
+# The current best model is kmad00/legal-colbert-clause-retriever (P6b,
+# MLEB NDCG@10 0.834) — see README.md and ../CURRENT_STATUS.md.
 license: cc-by-4.0
 language:
 - en

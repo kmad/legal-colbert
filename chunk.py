@@ -234,8 +234,32 @@ def split_definitions(text: str) -> list[tuple[str, str]]:
 
 
 def estimate_tokens(text: str) -> int:
-    """Rough token estimate: ~0.75 tokens per word for legal text."""
-    return int(len(text.split()) * 0.75)
+    """Rough token estimate: ~1.4 BPE tokens per word for legal text.
+
+    The old 0.75 multiplier UNDERestimated by ~2x, producing "384-token"
+    chunks of 700+ real tokens — far beyond the model's document_length
+    of 300 (parity_test.py finding, 2026-07-31).
+    """
+    return int(len(text.split()) * 1.4)
+
+
+def split_long_sentence(sent: str, max_tokens: int, overlap_words: int = 15) -> list[str]:
+    """Word-boundary fallback for a single sentence exceeding max_tokens.
+
+    Legal text contains run-on sentences (300+ words) that sentence splitting
+    cannot break; without this they exceed the model's document_length and get
+    truncated at encode time, silently making the tail unretrievable.
+    """
+    words = sent.split()
+    step = max(int(max_tokens * 0.9 / 1.4), overlap_words + 1)  # words per piece
+    pieces = []
+    start = 0
+    while start < len(words):
+        pieces.append(" ".join(words[start : start + step]))
+        if start + step >= len(words):
+            break
+        start += step - overlap_words
+    return pieces
 
 
 def split_at_sentences(text: str, max_tokens: int, overlap_sentences: int = 2) -> list[str]:
@@ -245,6 +269,14 @@ def split_at_sentences(text: str, max_tokens: int, overlap_sentences: int = 2) -
 
     # Split on sentence endings
     sentences = re.split(r"(?<=[.;])\s+", text)
+    # Word-level fallback for atomic sentences that alone exceed the limit
+    expanded = []
+    for sent in sentences:
+        if estimate_tokens(sent) > max_tokens:
+            expanded.extend(split_long_sentence(sent, max_tokens))
+        else:
+            expanded.append(sent)
+    sentences = expanded
     chunks = []
     current = []
     current_tokens = 0
@@ -253,9 +285,19 @@ def split_at_sentences(text: str, max_tokens: int, overlap_sentences: int = 2) -
         sent_tokens = estimate_tokens(sent)
         if current_tokens + sent_tokens > max_tokens and current:
             chunks.append(" ".join(current))
-            # Overlap: keep last N sentences
-            current = current[-overlap_sentences:] if overlap_sentences else []
-            current_tokens = sum(estimate_tokens(s) for s in current)
+            # Overlap: keep last N sentences, but never more than 1/4 of the
+            # token budget (fallback-split pieces are near max_tokens each,
+            # so a fixed sentence count can blow past the cap)
+            overlap = []
+            overlap_tokens = 0
+            for s in reversed(current[-overlap_sentences:] if overlap_sentences else []):
+                s_tokens = estimate_tokens(s)
+                if overlap_tokens + s_tokens > max_tokens // 4:
+                    break
+                overlap.insert(0, s)
+                overlap_tokens += s_tokens
+            current = overlap
+            current_tokens = overlap_tokens
         current.append(sent)
         current_tokens += sent_tokens
 
@@ -350,7 +392,7 @@ def find_breakpoints(
 
 def semantic_chunk(
     text: str,
-    max_tokens: int = 384,
+    max_tokens: int = 256,
     threshold_percentile: int = 25,
     min_chunk_sentences: int = 3,
 ) -> list[Chunk]:
@@ -425,7 +467,7 @@ def has_structural_markers(text: str) -> bool:
 
 def chunk_document(
     text: str,
-    max_tokens: int = 384,
+    max_tokens: int = 256,
     overlap_sentences: int = 2,
     offset_to_page: dict[int, int] | None = None,
 ) -> list[Chunk]:
@@ -447,7 +489,7 @@ def chunk_document(
     return semantic_chunk(clean_text(text), max_tokens=max_tokens)
 
 
-def chunk_pdf(pdf_path: str, max_tokens: int = 384) -> list[Chunk]:
+def chunk_pdf(pdf_path: str, max_tokens: int = 256) -> list[Chunk]:
     """Convenience: extract text from PDF and chunk it."""
     text, offset_to_page = extract_text_from_pdf(pdf_path)
     return chunk_document(text, max_tokens=max_tokens, offset_to_page=offset_to_page)

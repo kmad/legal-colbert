@@ -1,6 +1,13 @@
 """
 End-to-end retrieval pipeline for legal documents using ColBERT.
 
+Query phrasing matters: the model is trained on DESCRIPTIVE clause
+definitions, and terse keyword queries can flip rankings (P0 ablation in
+../CURRENT_STATUS.md). Prefer
+  "Find contractual provisions governing termination rights, termination for
+   cause, or the consequences of ending the agreement."
+over "termination clause".
+
 Usage:
     # Index a contract and run queries
     python retrieve.py interactive example_contract.pdf
@@ -54,7 +61,7 @@ def colbert_score(query_emb, doc_emb) -> float:
     return max_sim.sum().item()
 
 
-def index_document(pdf_path: str, model_name: str = DEFAULT_MODEL, max_tokens: int = 384):
+def index_document(pdf_path: str, model_name: str = DEFAULT_MODEL, max_tokens: int = 256):
     """Chunk a PDF and encode all chunks."""
     print(f"Chunking {pdf_path}...")
     chunks = chunk_pdf(pdf_path, max_tokens=max_tokens)

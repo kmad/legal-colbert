@@ -44,6 +44,25 @@ def load_metric(path: Path, key: str) -> float | None:
     return None
 
 
+BM25_BASELINE = "output/bm25_baseline.json"
+
+
+def load_bm25_row(path: Path) -> dict | None:
+    """Lexical baseline row (eval_bm25.py output, stopword-filtered variant)."""
+    if not path.exists():
+        return None
+    with open(path) as f:
+        data = json.load(f)
+    best = data.get("bm25_stopfiltered") or data.get("bm25_plain")
+    if not best:
+        return None
+    return {
+        "model": "bm25",
+        "mleb_ndcg@10": best.get("mleb", {}).get("ndcg@10"),
+        "blind_ndcg@10": best.get("blind_edgar", {}).get("macro_ndcg@10"),
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output-json", default="output/blind_overfit_assessment.json")
@@ -54,6 +73,13 @@ def main() -> None:
         mleb = load_metric(Path(paths["mleb"]), "ndcg@10")
         blind = load_metric(Path(paths["blind"]), "ndcg@10")
         rows.append({"model": name, "mleb_ndcg@10": mleb, "blind_ndcg@10": blind})
+
+    bm25 = load_bm25_row(Path(BM25_BASELINE))
+    if bm25:
+        rows.append(bm25)
+        for row in rows:
+            if row["model"] != "bm25" and row["blind_ndcg@10"] is not None and bm25["blind_ndcg@10"] is not None:
+                row["blind_beats_bm25"] = row["blind_ndcg@10"] > bm25["blind_ndcg@10"]
 
     baseline = next((row for row in rows if row["model"] == "v1"), None)
     for row in rows:
