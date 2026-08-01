@@ -48,6 +48,19 @@ class QuantEncoder:
         assert onnx_files, f"no .onnx in {onnx_dir}"
         self.session = ort.InferenceSession(str(onnx_files[0]), providers=["CPUExecutionProvider"])
         self.tokenizer = Tokenizer.from_file(str(onnx_dir / "tokenizer.json"))
+        # PyLate checkpoints persist `padding: Fixed 299` (pad token [MASK]) in
+        # tokenizer.json; Tokenizer.from_file honors it, so a short string
+        # encodes to 299 mostly-[MASK] ids. Combined with a fabricated all-ones
+        # attention mask this silently destroys retrieval (the 2026-08-01
+        # audit's original near-random result). Strip persisted state and
+        # sanity-check.
+        self.tokenizer.no_padding()
+        self.tokenizer.no_truncation()
+        probe = self.tokenizer.encode("short probe", add_special_tokens=True)
+        assert len(probe.ids) < 20, (
+            f"tokenizer still pads short input to {len(probe.ids)} ids — "
+            "persisted padding state survived; do not trust masks built as ones"
+        )
         cfg = json.loads((onnx_dir / "config_sentence_transformers.json").read_text())
         self.q_prefix = cfg.get("query_prefix", "[Q] ")
         self.d_prefix = cfg.get("document_prefix", "[D] ")
