@@ -1,0 +1,10 @@
+{
+  "source": "heading-labeled SEC EDGAR Exhibit 10 blind eval",
+  "contracts": 78,
+  "queries": 15,
+  "corpus": 830,
+  "qrels": 110,
+  "max_section_chars": 2500,
+  "min_positives_per_query": 1,
+  "labeling": "positive spans come from contract section headings only; no retriever-generated labels"
+}

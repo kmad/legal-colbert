@@ -34,12 +34,11 @@ DATA = Path(__file__).parent / "eval_blind_edgar_feed"
 TOP_K = 10
 
 
-def load(name: str):
-    with open(DATA / f"blind_edgar_{name}.json") as f:
-        return json.load(f)
+def build_sheet(out_path: Path, model_paths: list[str], data_dir: Path, prefix: str) -> None:
+    def load(name: str):
+        with open(data_dir / f"{prefix}_{name}.json") as f:
+            return json.load(f)
 
-
-def build_sheet(out_path: Path, model_path: str | None) -> None:
     queries = load("queries")
     corpus = load("corpus")
     qrels = load("qrels")
@@ -48,23 +47,27 @@ def build_sheet(out_path: Path, model_path: str | None) -> None:
     cids = list(corpus)
     bm25 = BM25Okapi([tokenize_stop(corpus[c]) for c in cids])
 
-    model_ranks: dict[str, list[str]] = {}
-    if model_path:
+    # model tag -> qid -> ranked cids
+    model_ranks: dict[str, dict[str, list[str]]] = {}
+    if model_paths:
         import torch
         from pylate import models
-
-        model = models.ColBERT(model_name_or_path=model_path)
-        q_emb = model.encode(list(queries.values()), is_query=True, show_progress_bar=False)
-        c_emb = model.encode([corpus[c] for c in cids], is_query=False, show_progress_bar=False)
 
         def maxsim(q, d):
             q = torch.tensor(q) if not isinstance(q, torch.Tensor) else q
             d = torch.tensor(d) if not isinstance(d, torch.Tensor) else d
             return torch.matmul(q, d.T).max(dim=1).values.sum().item()
 
-        for qi, qid in enumerate(queries):
-            scored = sorted(range(len(cids)), key=lambda di: -maxsim(q_emb[qi], c_emb[di]))
-            model_ranks[qid] = [cids[di] for di in scored[:TOP_K]]
+        for mi, model_path in enumerate(model_paths):
+            tag = Path(model_path.rstrip("/")).parent.name or f"model{mi}"
+            model = models.ColBERT(model_name_or_path=model_path)
+            q_emb = model.encode(list(queries.values()), is_query=True, show_progress_bar=False)
+            c_emb = model.encode([corpus[c] for c in cids], is_query=False, show_progress_bar=False)
+            ranks = {}
+            for qi, qid in enumerate(queries):
+                scored = sorted(range(len(cids)), key=lambda di: -maxsim(q_emb[qi], c_emb[di]))
+                ranks[qid] = [cids[di] for di in scored[:TOP_K]]
+            model_ranks[tag] = ranks
 
     rows = []
     for qid, qtext in queries.items():
@@ -78,8 +81,9 @@ def build_sheet(out_path: Path, model_path: str | None) -> None:
             pool.setdefault(d, []).append("heading_label")
         for rank, d in enumerate(bm25_top, 1):
             pool.setdefault(d, []).append(f"bm25@{rank}")
-        for rank, d in enumerate(model_ranks.get(qid, []), 1):
-            pool.setdefault(d, []).append(f"model@{rank}")
+        for tag, ranks in model_ranks.items():
+            for rank, d in enumerate(ranks.get(qid, []), 1):
+                pool.setdefault(d, []).append(f"{tag}@{rank}")
 
         for did, sources in pool.items():
             rows.append({
@@ -124,15 +128,19 @@ def apply_sheet(sheet_path: Path, out_path: Path) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default=None, help="Optional ColBERT model to pool top-k candidates from.")
-    ap.add_argument("--out", default=str(DATA / "adjudication_sheet.jsonl"))
+    ap.add_argument("--model", action="append", default=None, help="ColBERT model(s) to pool top-k candidates from (repeatable).")
+    ap.add_argument("--data-dir", default=str(DATA))
+    ap.add_argument("--prefix", default="blind_edgar")
+    ap.add_argument("--out", default="")
     ap.add_argument("--apply", default=None, help="Filled sheet to merge into adjudicated qrels.")
     args = ap.parse_args()
 
+    data_dir = Path(args.data_dir)
+    out = Path(args.out) if args.out else data_dir / "adjudication_sheet.jsonl"
     if args.apply:
-        apply_sheet(Path(args.apply), DATA / "blind_edgar_qrels_adjudicated.json")
+        apply_sheet(Path(args.apply), data_dir / f"{args.prefix}_qrels_adjudicated.json")
     else:
-        build_sheet(Path(args.out), args.model)
+        build_sheet(out, args.model or [], data_dir, args.prefix)
 
 
 if __name__ == "__main__":
