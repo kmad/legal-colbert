@@ -1,0 +1,63 @@
+{
+  "seed": 42,
+  "triplets": 90288,
+  "multi_negative_records": 15048,
+  "mleb_contamination_dropped": 1,
+  "sources": {
+    "cuad_records": 7528,
+    "depth_records": 7520
+  },
+  "subtype_train_counts": {
+    "Assignment": 600,
+    "Assignment and Assumption": 462,
+    "Cure Period": 300,
+    "Early Termination": 196,
+    "Effect of Termination": 600,
+    "No Assignment": 600,
+    "Notice Addresses": 100,
+    "Notice of Default": 558,
+    "Notice of Termination": 389,
+    "Notices": 600,
+    "Successors and Assigns": 600,
+    "Termination": 600,
+    "Termination Without Cause": 600,
+    "Termination for Cause": 600,
+    "Termination for Convenience": 89,
+    "Termination for Insolvency": 96,
+    "Termination upon Change of Control": 530
+  },
+  "subtype_eval_counts": {
+    "Assignment": 30,
+    "Assignment and Assumption": 30,
+    "Cure Period": 30,
+    "Early Termination": 30,
+    "Effect of Termination": 30,
+    "No Assignment": 30,
+    "Notice Addresses": 25,
+    "Notice of Default": 30,
+    "Notice of Termination": 30,
+    "Notices": 30,
+    "Successors and Assigns": 30,
+    "Termination": 30,
+    "Termination Without Cause": 30,
+    "Termination for Cause": 30,
+    "Termination for Convenience": 22,
+    "Termination for Insolvency": 23,
+    "Termination upon Change of Control": 30
+  },
+  "depth_validation": {
+    "queries": 17,
+    "corpus": 490,
+    "qrels": 490
+  },
+  "params": {
+    "negatives_per_positive": 6,
+    "max_within_family": 4,
+    "max_per_subtype": 600,
+    "eval_per_subtype": 30,
+    "min_words": 10,
+    "max_words": 320,
+    "cuad_train_window": 256,
+    "cuad_balance_ceiling": 400
+  }
+}
