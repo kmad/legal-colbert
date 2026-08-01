@@ -1,0 +1,25 @@
+{
+  "onnx_dir": "/private/tmp/claude-501/-Users-kmad-dev-c/765b723a-1c10-4298-be18-15dbfcbf7a1e/scratchpad/p10f_onnx",
+  "parity": {
+    "max_emb_abs_diff": 0.11881,
+    "max_score_rel_diff": 0.03638,
+    "mean_score_rel_diff": 0.01065,
+    "fixture_top1_agreement": "5/5"
+  },
+  "mleb": {
+    "ndcg@10": 0.7666,
+    "map": 0.7047
+  },
+  "blind_v2adj": {
+    "macro_ndcg@10": 0.7557,
+    "macro_ndcg@10_n>=5": 0.7514
+  },
+  "depth_v3": {
+    "macro_ndcg@10": 0.6552,
+    "macro_ndcg@10_n>=5": 0.6552
+  },
+  "clause_mleb": {
+    "macro_ndcg@10": 0.5542,
+    "macro_ndcg@10_n>=5": 0.5975
+  }
+}

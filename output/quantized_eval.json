@@ -1,0 +1,33 @@
+{
+  "onnx_dir": "/Users/kmad/dev/contract_browser/public/models/legal-colbert",
+  "quantized_meta": {
+    "model_id": "kmad00/legal-colbert-extractor",
+    "checkpoint": "p10f-stack-p8b",
+    "embedding_dim": 128,
+    "document_length": 300,
+    "query_length": 48,
+    "quantization": "dynamic-int8"
+  },
+  "parity": {
+    "max_emb_abs_diff": null,
+    "max_score_rel_diff": 3.59802,
+    "mean_score_rel_diff": 3.03072,
+    "fixture_top1_agreement": "2/5"
+  },
+  "mleb": {
+    "ndcg@10": 0.1866,
+    "map": 0.1433
+  },
+  "blind_v2adj": {
+    "macro_ndcg@10": 0.2099,
+    "macro_ndcg@10_n>=5": 0.126
+  },
+  "depth_v3": {
+    "macro_ndcg@10": 0.0964,
+    "macro_ndcg@10_n>=5": 0.0964
+  },
+  "clause_mleb": {
+    "macro_ndcg@10": 0.1706,
+    "macro_ndcg@10_n>=5": 0.1458
+  }
+}
