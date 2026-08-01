@@ -18,9 +18,9 @@ $PY -c "import torch; print('cuda', torch.cuda.is_available())"
 BASE=output/legal-colbert-p7b-depth-200/final
 
 # Build both datasets on-pod (model-mined + BM25 control)
-$PY build_extractor_data.py --provisions extractor_provisions.json \
+$PY build_extractor_data.py --provisions extractor_provisions.json --cuad-records-json cuad_anchor_records.json \
   --hard-negative-model "$BASE" --output-dir data_p8_extractor_mined 2>&1 | tail -8
-$PY build_extractor_data.py --provisions extractor_provisions.json \
+$PY build_extractor_data.py --provisions extractor_provisions.json --cuad-records-json cuad_anchor_records.json \
   --output-dir data_p8_extractor_bm25 2>&1 | tail -8
 
 eval_one () {

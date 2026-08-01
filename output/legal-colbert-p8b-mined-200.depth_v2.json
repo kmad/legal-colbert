@@ -1,0 +1,232 @@
+{
+  "label": "legal-colbert-p8b-mined-200",
+  "split": "depth_v2",
+  "n_categories": 44,
+  "macro_ndcg@10": 0.6592,
+  "macro_map": 0.5651,
+  "macro_ndcg@10_n>=5": 0.6592,
+  "macro_map_n>=5": 0.5651,
+  "n_big_categories": 44,
+  "per_category": {
+    "Termination": {
+      "ndcg@10": 0.0,
+      "map": 0.0879,
+      "n_relevant": 30
+    },
+    "Assignment": {
+      "ndcg@10": 0.0,
+      "map": 0.2015,
+      "n_relevant": 30
+    },
+    "Indemnification by the Company": {
+      "ndcg@10": 0.0,
+      "map": 0.1517,
+      "n_relevant": 30
+    },
+    "Indemnification": {
+      "ndcg@10": 0.0663,
+      "map": 0.2242,
+      "n_relevant": 30
+    },
+    "Payment Terms": {
+      "ndcg@10": 0.0851,
+      "map": 0.1556,
+      "n_relevant": 30
+    },
+    "Intellectual Property": {
+      "ndcg@10": 0.3719,
+      "map": 0.4426,
+      "n_relevant": 30
+    },
+    "Notice Addresses": {
+      "ndcg@10": 0.3863,
+      "map": 0.4204,
+      "n_relevant": 25
+    },
+    "Termination for Convenience": {
+      "ndcg@10": 0.4003,
+      "map": 0.3146,
+      "n_relevant": 22
+    },
+    "Confidentiality": {
+      "ndcg@10": 0.4499,
+      "map": 0.3617,
+      "n_relevant": 30
+    },
+    "Authority": {
+      "ndcg@10": 0.4915,
+      "map": 0.3749,
+      "n_relevant": 30
+    },
+    "Successors and Assigns": {
+      "ndcg@10": 0.522,
+      "map": 0.4108,
+      "n_relevant": 30
+    },
+    "Survival": {
+      "ndcg@10": 0.5271,
+      "map": 0.3713,
+      "n_relevant": 30
+    },
+    "Effect of Termination": {
+      "ndcg@10": 0.5326,
+      "map": 0.26,
+      "n_relevant": 30
+    },
+    "Consent to Jurisdiction": {
+      "ndcg@10": 0.5326,
+      "map": 0.5564,
+      "n_relevant": 30
+    },
+    "Dispute Resolution": {
+      "ndcg@10": 0.5704,
+      "map": 0.4706,
+      "n_relevant": 30
+    },
+    "Notices": {
+      "ndcg@10": 0.5751,
+      "map": 0.3916,
+      "n_relevant": 30
+    },
+    "Limitation of Liability": {
+      "ndcg@10": 0.5751,
+      "map": 0.3579,
+      "n_relevant": 30
+    },
+    "Exclusion of Consequential Damages": {
+      "ndcg@10": 0.641,
+      "map": 0.7413,
+      "n_relevant": 30
+    },
+    "Insurance": {
+      "ndcg@10": 0.641,
+      "map": 0.78,
+      "n_relevant": 30
+    },
+    "Waiver of Jury Trial": {
+      "ndcg@10": 0.6458,
+      "map": 0.732,
+      "n_relevant": 30
+    },
+    "Permitted Disclosures": {
+      "ndcg@10": 0.65,
+      "map": 0.404,
+      "n_relevant": 30
+    },
+    "Audit Rights": {
+      "ndcg@10": 0.6848,
+      "map": 0.6163,
+      "n_relevant": 30
+    },
+    "No Assignment": {
+      "ndcg@10": 0.6968,
+      "map": 0.6263,
+      "n_relevant": 30
+    },
+    "Termination for Cause": {
+      "ndcg@10": 0.6969,
+      "map": 0.4849,
+      "n_relevant": 30
+    },
+    "Termination upon Change of Control": {
+      "ndcg@10": 0.7065,
+      "map": 0.759,
+      "n_relevant": 30
+    },
+    "Representations and Warranties": {
+      "ndcg@10": 0.7574,
+      "map": 0.4204,
+      "n_relevant": 30
+    },
+    "Taxes": {
+      "ndcg@10": 0.7885,
+      "map": 0.7125,
+      "n_relevant": 30
+    },
+    "Cure Period": {
+      "ndcg@10": 0.7936,
+      "map": 0.4311,
+      "n_relevant": 30
+    },
+    "Termination for Insolvency": {
+      "ndcg@10": 0.8611,
+      "map": 0.6574,
+      "n_relevant": 23
+    },
+    "Termination Without Cause": {
+      "ndcg@10": 0.8701,
+      "map": 0.6783,
+      "n_relevant": 30
+    },
+    "Early Termination": {
+      "ndcg@10": 0.8701,
+      "map": 0.4384,
+      "n_relevant": 30
+    },
+    "Late Payment Interest": {
+      "ndcg@10": 0.9052,
+      "map": 0.7877,
+      "n_relevant": 30
+    },
+    "Organization and Good Standing": {
+      "ndcg@10": 0.9149,
+      "map": 0.6261,
+      "n_relevant": 30
+    },
+    "Return of Confidential Information": {
+      "ndcg@10": 0.9266,
+      "map": 0.8235,
+      "n_relevant": 30
+    },
+    "Ownership of Work Product": {
+      "ndcg@10": 0.9306,
+      "map": 0.6949,
+      "n_relevant": 30
+    },
+    "Arbitration": {
+      "ndcg@10": 0.9364,
+      "map": 0.8489,
+      "n_relevant": 30
+    },
+    "Notice of Termination": {
+      "ndcg@10": 1.0,
+      "map": 0.8483,
+      "n_relevant": 30
+    },
+    "Assignment and Assumption": {
+      "ndcg@10": 1.0,
+      "map": 0.9222,
+      "n_relevant": 30
+    },
+    "Notice of Default": {
+      "ndcg@10": 1.0,
+      "map": 0.9351,
+      "n_relevant": 30
+    },
+    "Governing Law": {
+      "ndcg@10": 1.0,
+      "map": 0.947,
+      "n_relevant": 30
+    },
+    "Indemnification Procedures": {
+      "ndcg@10": 1.0,
+      "map": 0.8235,
+      "n_relevant": 30
+    },
+    "Disclaimer of Warranties": {
+      "ndcg@10": 1.0,
+      "map": 0.8537,
+      "n_relevant": 30
+    },
+    "License Grant": {
+      "ndcg@10": 1.0,
+      "map": 0.9332,
+      "n_relevant": 30
+    },
+    "Force Majeure": {
+      "ndcg@10": 1.0,
+      "map": 0.7845,
+      "n_relevant": 30
+    }
+  }
+}

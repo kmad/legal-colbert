@@ -68,6 +68,7 @@ def main() -> None:
     ap.add_argument("--negatives-per-positive", type=int, default=6)
     ap.add_argument("--max-within-family", type=int, default=3)
     ap.add_argument("--mined-top-k", type=int, default=250)
+    ap.add_argument("--cuad-records-json", default="", help="Pre-built CUAD anchor records (bypasses HF dataset loading — needed on pods where datasets>=4 rejects script datasets).")
     ap.add_argument("--cuad-dev-fraction", type=float, default=0.10)
     ap.add_argument("--cuad-test-fraction", type=float, default=0.10)
     ap.add_argument("--cuad-train-window", type=int, default=256)
@@ -156,14 +157,19 @@ def main() -> None:
     print(f"extractor records: {len(records)}")
 
     print("CUAD anchor...")
-    cuad_records, cuad_eval = load_cuad_records(
-        args.cuad_dev_fraction, args.cuad_test_fraction,
-        args.negatives_per_positive, rng, train_window=args.cuad_train_window,
-    )
-    if args.cuad_balance_ceiling > 0:
-        cuad_records, _ = balance_records_by_category(
-            cuad_records, args.cuad_balance_ceiling, 0, rng
+    if args.cuad_records_json:
+        with open(args.cuad_records_json) as f:
+            cuad_records = json.load(f)
+        cuad_eval = {}
+    else:
+        cuad_records, cuad_eval = load_cuad_records(
+            args.cuad_dev_fraction, args.cuad_test_fraction,
+            args.negatives_per_positive, rng, train_window=args.cuad_train_window,
         )
+        if args.cuad_balance_ceiling > 0:
+            cuad_records, _ = balance_records_by_category(
+                cuad_records, args.cuad_balance_ceiling, 0, rng
+            )
     print(f"CUAD records: {len(cuad_records)}")
 
     all_records = cuad_records + records

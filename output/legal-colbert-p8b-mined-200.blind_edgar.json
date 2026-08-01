@@ -1,0 +1,72 @@
+{
+  "label": "legal-colbert-p8b-mined-200",
+  "split": "blind_edgar",
+  "n_categories": 12,
+  "macro_ndcg@10": 0.533,
+  "macro_map": 0.4557,
+  "macro_ndcg@10_n>=5": 0.7073,
+  "macro_map_n>=5": 0.6087,
+  "n_big_categories": 5,
+  "per_category": {
+    "assignment": {
+      "ndcg@10": 0.0,
+      "map": 0.0632,
+      "n_relevant": 3
+    },
+    "change_of_control": {
+      "ndcg@10": 0.0,
+      "map": 0.0213,
+      "n_relevant": 1
+    },
+    "payment": {
+      "ndcg@10": 0.1846,
+      "map": 0.0833,
+      "n_relevant": 2
+    },
+    "dispute_resolution": {
+      "ndcg@10": 0.4307,
+      "map": 0.25,
+      "n_relevant": 1
+    },
+    "representations_warranties": {
+      "ndcg@10": 0.535,
+      "map": 0.4543,
+      "n_relevant": 7
+    },
+    "intellectual_property": {
+      "ndcg@10": 0.6131,
+      "map": 0.5075,
+      "n_relevant": 2
+    },
+    "survival": {
+      "ndcg@10": 0.6309,
+      "map": 0.5,
+      "n_relevant": 1
+    },
+    "indemnification": {
+      "ndcg@10": 0.6663,
+      "map": 0.603,
+      "n_relevant": 8
+    },
+    "notices": {
+      "ndcg@10": 0.6797,
+      "map": 0.5255,
+      "n_relevant": 8
+    },
+    "termination": {
+      "ndcg@10": 0.767,
+      "map": 0.7028,
+      "n_relevant": 16
+    },
+    "confidentiality": {
+      "ndcg@10": 0.8883,
+      "map": 0.7579,
+      "n_relevant": 6
+    },
+    "governing_law": {
+      "ndcg@10": 1.0,
+      "map": 1.0,
+      "n_relevant": 1
+    }
+  }
+}

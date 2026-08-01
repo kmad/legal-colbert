@@ -1,0 +1,87 @@
+{
+  "label": "p6b-baseline",
+  "split": "blind_v2adj",
+  "n_categories": 15,
+  "macro_ndcg@10": 0.7642,
+  "macro_map": 0.6355,
+  "macro_ndcg@10_n>=5": 0.7736,
+  "macro_map_n>=5": 0.6338,
+  "n_big_categories": 12,
+  "per_category": {
+    "change_of_control": {
+      "ndcg@10": 0.3616,
+      "map": 0.2342,
+      "n_relevant": 7
+    },
+    "limitation_of_liability": {
+      "ndcg@10": 0.4041,
+      "map": 0.25,
+      "n_relevant": 4
+    },
+    "confidentiality": {
+      "ndcg@10": 0.4094,
+      "map": 0.421,
+      "n_relevant": 8
+    },
+    "representations_warranties": {
+      "ndcg@10": 0.5861,
+      "map": 0.4103,
+      "n_relevant": 13
+    },
+    "intellectual_property": {
+      "ndcg@10": 0.7533,
+      "map": 0.63,
+      "n_relevant": 5
+    },
+    "dispute_resolution": {
+      "ndcg@10": 0.7601,
+      "map": 0.6652,
+      "n_relevant": 11
+    },
+    "survival": {
+      "ndcg@10": 0.7721,
+      "map": 0.7163,
+      "n_relevant": 12
+    },
+    "insurance": {
+      "ndcg@10": 0.7757,
+      "map": 0.6776,
+      "n_relevant": 4
+    },
+    "assignment": {
+      "ndcg@10": 0.8205,
+      "map": 0.6574,
+      "n_relevant": 14
+    },
+    "payment": {
+      "ndcg@10": 0.9052,
+      "map": 0.5281,
+      "n_relevant": 27
+    },
+    "indemnification": {
+      "ndcg@10": 0.9149,
+      "map": 0.7909,
+      "n_relevant": 12
+    },
+    "termination": {
+      "ndcg@10": 1.0,
+      "map": 0.9162,
+      "n_relevant": 22
+    },
+    "notices": {
+      "ndcg@10": 1.0,
+      "map": 0.8218,
+      "n_relevant": 15
+    },
+    "governing_law": {
+      "ndcg@10": 1.0,
+      "map": 0.8137,
+      "n_relevant": 16
+    },
+    "force_majeure": {
+      "ndcg@10": 1.0,
+      "map": 1.0,
+      "n_relevant": 1
+    }
+  }
+}
