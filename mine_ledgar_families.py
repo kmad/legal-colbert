@@ -63,7 +63,30 @@ COMMON_SUBTYPES = [
     ("audit", "Audit Rights", r"^audits?( rights?)?$|^books and records$|^inspection( rights?)?$|^right to audit", r"audit|inspect|books and records"),
 ]
 
-ALL_SUBTYPES = P7_SUBTYPES + COMMON_SUBTYPES
+# Uncovered MLEB label space (P9 diagnosis: these types had zero training
+# coverage and are where P7/P8 lost or failed to gain points).
+UNCOVERED_SUBTYPES = [
+    ("dealterms", "Conditions Precedent", r"^conditions? precedent|^conditions to (closing|the obligations|effectiveness)|^closing conditions", r"condition|subject to the satisfaction"),
+    ("dealterms", "Right of First Refusal", r"right of first (refusal|offer)|^first refusal", r"first (refusal|offer)"),
+    ("dealterms", "Tag-Along Rights", r"tag-?along|co-?sale", r"tag-?along|co-?sale"),
+    ("dealterms", "Drag-Along Rights", r"drag-?along", r"drag-?along"),
+    ("dealterms", "Most Favored Nation", r"most favored (nation|customer)|^mfn", r"most favored|no less favorable"),
+    ("dealterms", "Lock-Up", r"^lock-? ?up", r"lock-? ?up|not.{0,40}(sell|transfer|dispose)"),
+    ("dealterms", "Break Fee", r"break-? ?(up )?fee|termination fee", r"fee"),
+    ("dealterms", "Set-Off", r"^set-? ?off|^right of set-? ?off|^offset$", r"set-? ?off|offset|deduct"),
+    ("dealterms", "Clawback", r"clawback|claw-back|^recoupment", r"clawback|recoup|repay|forfeit"),
+    ("dealterms", "Exclusivity", r"^exclusivity|^exclusive (dealing|rights)$|^no.?shop", r"exclusiv"),
+    ("boilerplate2", "Novation", r"^novation", r"novat"),
+    ("boilerplate2", "Order of Precedence", r"^(order of )?precedence|^conflicts?( of terms)?$|^inconsistenc", r"precedence|control|prevail|conflict"),
+    ("boilerplate2", "Good Faith", r"^good faith|^duty of good faith|^covenant of good faith", r"good faith"),
+    ("boilerplate2", "Cumulative Rights", r"^cumulative (rights|remedies)|^rights? and remedies cumulative|^remedies cumulative", r"cumulative"),
+    ("boilerplate2", "Escalation", r"^escalation|^senior management (review|escalation)", r"escalat|senior (management|executive)"),
+    ("boilerplate2", "Penalty", r"^penalt(y|ies)|^liquidated damages", r"penalt|liquidated damages"),
+    ("payment", "Payment Currency", r"^currency( of payment)?$|^payment currency|^denominat", r"currenc|dollars|euro"),
+    ("employment2", "Probation", r"^probation(ary)?( period)?$", r"probation"),
+]
+
+ALL_SUBTYPES = P7_SUBTYPES + COMMON_SUBTYPES + UNCOVERED_SUBTYPES
 PRIORITY_FAMILIES = {"assignment", "termination", "notices", "cure"}
 
 
@@ -154,10 +177,10 @@ def main() -> None:
         }
 
     ev = Path(args.eval_dir)
-    write_json(ev / "depth_v2_queries.json", eval_q)
-    write_json(ev / "depth_v2_corpus.json", eval_c)
-    write_json(ev / "depth_v2_qrels.json", {q: dict(d) for q, d in eval_r.items()})
-    write_json(ev / "depth_v2_categories.json", eval_cat)
+    write_json(ev / "depth_v3_queries.json", eval_q)
+    write_json(ev / "depth_v3_corpus.json", eval_c)
+    write_json(ev / "depth_v3_qrels.json", {q: dict(d) for q, d in eval_r.items()})
+    write_json(ev / "depth_v3_categories.json", eval_cat)
 
     with open(args.output, "w") as f:
         json.dump(out_buckets, f)
