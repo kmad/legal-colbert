@@ -2,7 +2,10 @@
 
 A fine-tuned ColBERT model for legal contract clause retrieval, with a complete pipeline for chunking, indexing, querying, and benchmarking.
 
-Current model weights (P6b, best): [kmad00/legal-colbert-clause-retriever](https://huggingface.co/kmad00/legal-colbert-clause-retriever) (CC BY 4.0).
+Two released models (CC BY 4.0), one per objective:
+- [kmad00/legal-colbert-clause-retriever](https://huggingface.co/kmad00/legal-colbert-clause-retriever) — MLEB/template-clause line (p10e, MLEB 0.837)
+- [kmad00/legal-colbert-extractor](https://huggingface.co/kmad00/legal-colbert-extractor) — real-contract extraction line (p10f; best on the human-adjudicated blind SEC gate, 0.778)
+
 The original V1 remains at [kmad00/legal-colbert-v1](https://huggingface.co/kmad00/legal-colbert-v1).
 Full experiment log (V1 → P6b, all eval protocols): [`../CURRENT_STATUS.md`](../CURRENT_STATUS.md).
 
@@ -12,7 +15,9 @@ Full experiment log (V1 → P6b, all eval protocols): [`../CURRENT_STATUS.md`](.
 
 | Model | Type | NDCG@10 | MAP | R@10 |
 |---|---|---|---|---|
-| **legal-colbert-clause-retriever / P6b (ours)** | ColBERT, fine-tuned | **0.834** | **0.771** | **0.956** |
+| **legal-colbert-clause-retriever / p10e (ours)** | ColBERT, fine-tuned | **0.837** | **0.778** | 0.944 |
+| legal-colbert-extractor / p10f (ours, real-contract line) | ColBERT, fine-tuned | 0.830 | — | — |
+| legal-colbert P6b (ours, prior release) | ColBERT, fine-tuned | 0.834 | 0.771 | 0.956 |
 | legal-colbert-v1 (ours, original) | ColBERT, fine-tuned | 0.813 | 0.741 | 0.933 |
 | BGE-M3 | Bi-encoder | 0.728 | — | — |
 | GTE-ModernColBERT-v1 | ColBERT, base | 0.672 | — | — |
